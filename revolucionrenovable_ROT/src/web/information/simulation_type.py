@@ -1,6 +1,7 @@
 from dash import dcc, html
 
-class ChiquiSimulation:
+
+class Simulation:
 
     def __init__(self):
         # TODO: Simulation for service and define the type of the dispatch economico or diseno optimization.

@@ -1,7 +1,8 @@
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-class ChiquiBatteryCycleConf:
+
+class BatteryCycleConf:
     def __init__(self):
         self.battery_cycle_lb_min = 0
         self.battery_cycle_ub_max = 365
@@ -99,3 +100,4 @@ class ChiquiBatteryCycleConf:
             if len(value) > 1:
                 value = value[-1:]
             return value
+

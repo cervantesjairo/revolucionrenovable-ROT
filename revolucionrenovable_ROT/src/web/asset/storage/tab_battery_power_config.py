@@ -1,7 +1,8 @@
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-class ChiquiBatteryPowerConf:
+
+class BatteryPowerConf:
     def __init__(self):
         self.battery_name = 'Name'
         self.battery_power_fix = 100

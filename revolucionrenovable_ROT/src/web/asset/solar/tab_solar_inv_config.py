@@ -1,7 +1,8 @@
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-class ChiquiSolarInvConf:
+
+class SolarInvConf:
     def __init__(self):
         self.panel_name = 'jinko500'
         self.solar_size_fix = 100

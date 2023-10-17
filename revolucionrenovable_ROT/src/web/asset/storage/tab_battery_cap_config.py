@@ -1,7 +1,8 @@
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-class ChiquiBatteryCapConf:
+
+class BatteryCapConf:
     def __init__(self):
         self.battery_duration_fix = 4
         self.battery_duration_ub_max = 8

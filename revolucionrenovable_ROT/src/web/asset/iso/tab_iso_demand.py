@@ -2,7 +2,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
 
-class ChiquiCaisoDemand:
+class IsoDemand:
     def __init__(self):
         self.iso_demand_size_factor = 1
         self.layout = self.setup_layout()

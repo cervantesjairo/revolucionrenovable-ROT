@@ -1,8 +1,9 @@
 from dash import dcc, html
-from web.asset.solar.tab_solar import TabSolar
-from web.asset.storage.tab_battery import TabBattery
-from web.asset.wind.tab_wind import TabWind
-from web.asset.iso.tab_iso import TabISO
+from revolucionrenovable_ROT.src.web.asset.solar.tab_solar import TabSolar
+from revolucionrenovable_ROT.src.web.asset.storage.tab_battery import TabBattery
+from revolucionrenovable_ROT.src.web.asset.wind.tab_wind import TabWind
+from revolucionrenovable_ROT.src.web.asset.iso.tab_iso import TabISO
+
 
 class TabAsset:
     def __init__(self):

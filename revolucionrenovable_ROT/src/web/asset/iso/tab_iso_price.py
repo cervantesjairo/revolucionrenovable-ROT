@@ -2,7 +2,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
 
-class ChiquiCaisoPrice:
+class IsoPrice:
     def __init__(self):
         # self.panel_name = 'jinko500'
         self.layout = self.setup_layout()

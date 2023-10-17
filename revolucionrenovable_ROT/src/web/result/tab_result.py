@@ -5,8 +5,11 @@ from dash import dcc, html
 import pandas as pd
 import plotly.graph_objs as go
 import plotly.subplots as sp
-from model.user_interface.inputs_ui import UserInterface
-from model.run import SolveModel
+from revolucionrenovable_ROT.src.msg.user_interface.inputs_ui import UserInterface
+
+# from model.user_interface.inputs_ui import UserInterface
+# from model.run import SolveModel
+
 
 class TabResult:
     def __init__(self):
@@ -59,52 +62,55 @@ class TabResult:
                 df_ui_timeseries['lat'] = [lat]
                 df_ui_timeseries['lon'] = [lon]
 
-                model_ = SolveModel(df_ui_timeseries=df_ui_timeseries, df_ui_input=df_ui_input)
-                result_t1, result_t2, result_fig1, result_fig2 = model_.get_results()
+                x = 1
+                return x
 
-                table_eco = dash_table.DataTable(
-                    id='table',
-                    columns=[{'name': f'{col}', 'id': f'{col}'} for col in result_t1.columns],
-                    data=result_t1.to_dict('records'),
-                    style_table={'height': '300px', 'overflowY': 'auto', 'border': 'thin lightgrey solid'},
-                    style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
-                    style_cell={
-                        'textAlign': 'left',
-                        'padding': '8px',  # Adjust cell padding
-                        'minWidth': '100px',  # Minimum column width
-                        'width': '150px',  # Default column width
-                        'maxWidth': '300px',  # Maximum column width
-                        'whiteSpace': 'normal',  # Wrap cell content
-                        'border': '1px solid grey',  # Border around cells
-                    },
-                )
+                # model_ = SolveModel(df_ui_timeseries=df_ui_timeseries, df_ui_input=df_ui_input)
+                # result_t1, result_t2, result_fig1, result_fig2 = model_.get_results()
 
-                table_dispatch = dash_table.DataTable(
-                    id='table',
-                    columns=[{'name': f'{col}', 'id': f'{col}'} for col in result_t2.columns],
-                    data=result_t2.to_dict('records'),
-                    style_table={'height': '300px', 'overflowY': 'auto', 'border': 'thin lightgrey solid'},
-                    style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
-                    style_cell={
-                        'textAlign': 'left',
-                        'padding': '8px',  # Adjust cell padding
-                        'minWidth': '100px',  # Minimum column width
-                        'width': '150px',  # Default column width
-                        'maxWidth': '300px',  # Maximum column width
-                        'whiteSpace': 'normal',  # Wrap cell content
-                        'border': '1px solid grey',  # Border around cells
-                    },
-                )
-
-
-                if result_fig1:
-                    fig_dispatch = dcc.Graph(figure=result_fig1)
-                else:
-                    fig_dispatch = html.Div()
-
-                if result_fig2:
-                    fig_battery = dcc.Graph(figure=result_fig2)
-                else:
-                    fig_battery = html.Div()
-
-                return table_eco, table_dispatch, fig_dispatch, fig_battery
+                # table_eco = dash_table.DataTable(
+                #     id='table',
+                #     columns=[{'name': f'{col}', 'id': f'{col}'} for col in result_t1.columns],
+                #     data=result_t1.to_dict('records'),
+                #     style_table={'height': '300px', 'overflowY': 'auto', 'border': 'thin lightgrey solid'},
+                #     style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
+                #     style_cell={
+                #         'textAlign': 'left',
+                #         'padding': '8px',  # Adjust cell padding
+                #         'minWidth': '100px',  # Minimum column width
+                #         'width': '150px',  # Default column width
+                #         'maxWidth': '300px',  # Maximum column width
+                #         'whiteSpace': 'normal',  # Wrap cell content
+                #         'border': '1px solid grey',  # Border around cells
+                #     },
+                # )
+                #
+                # table_dispatch = dash_table.DataTable(
+                #     id='table',
+                #     columns=[{'name': f'{col}', 'id': f'{col}'} for col in result_t2.columns],
+                #     data=result_t2.to_dict('records'),
+                #     style_table={'height': '300px', 'overflowY': 'auto', 'border': 'thin lightgrey solid'},
+                #     style_header={'backgroundColor': 'rgb(230, 230, 230)', 'fontWeight': 'bold'},
+                #     style_cell={
+                #         'textAlign': 'left',
+                #         'padding': '8px',  # Adjust cell padding
+                #         'minWidth': '100px',  # Minimum column width
+                #         'width': '150px',  # Default column width
+                #         'maxWidth': '300px',  # Maximum column width
+                #         'whiteSpace': 'normal',  # Wrap cell content
+                #         'border': '1px solid grey',  # Border around cells
+                #     },
+                # )
+                #
+                #
+                # if result_fig1:
+                #     fig_dispatch = dcc.Graph(figure=result_fig1)
+                # else:
+                #     fig_dispatch = html.Div()
+                #
+                # if result_fig2:
+                #     fig_battery = dcc.Graph(figure=result_fig2)
+                # else:
+                #     fig_battery = html.Div()
+                #
+                # return table_eco, table_dispatch, fig_dispatch, fig_battery

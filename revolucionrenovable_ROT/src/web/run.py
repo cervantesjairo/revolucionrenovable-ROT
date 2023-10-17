@@ -1,41 +1,41 @@
 import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
-from web.information.tab_information import TabInf
-from web.information.simulation_type import ChiquiSimulation
-from web.asset.tab_asset import TabAsset
-from web.asset.solar.tab_solar_inv_config import ChiquiSolarInvConf
-from web.asset.solar.tab_solar_ratio_config import ChiquiSolarRatioConf
-from web.asset.storage.tab_battery_power_config import ChiquiBatteryPowerConf
-from web.asset.storage.tab_battery_cap_config import ChiquiBatteryCapConf
-from web.asset.storage.tab_battery_cycle_config import ChiquiBatteryCycleConf
-from web.asset.storage.tab_battery_dod_config import ChiquiBatteryDoDConf
-from web.asset.wind.tab_wind_config import ChiquiWindConf
+from revolucionrenovable_ROT.src.web.information.tab_information import TabInf
+from revolucionrenovable_ROT.src.web.information.simulation_type import Simulation
+from revolucionrenovable_ROT.src.web.asset.tab_asset import TabAsset
+from revolucionrenovable_ROT.src.web.asset.solar.tab_solar_inv_config import SolarInvConf
+from revolucionrenovable_ROT.src.web.asset.solar.tab_solar_ratio_config import SolarRatioConf
+from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_power_config import BatteryPowerConf
+from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_cap_config import BatteryCapConf
+from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_cycle_config import BatteryCycleConf
+from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_dod_config import BatteryDoDConf
+from revolucionrenovable_ROT.src.web.asset.wind.tab_wind_config import WindConf
 
+from revolucionrenovable_ROT.src.web.result.tab_result import TabResult
+from revolucionrenovable_ROT.src.layers.timeseries.coordinate.latlon import LatLon
+from revolucionrenovable_ROT.src.layers.timeseries.datetime.range import DateTimeRange
+from revolucionrenovable_ROT.src.layers.eng_economy.cashflow import CashFlow
 
-from web.result.tab_result import TabResult
-from common.timeseries.date.range import ChiquiDateRange
-from common.timeseries.coordinate.latlon import ChiquiLatLon
-from common.economics.financial import ChiquiCashFlow
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 #app = dash.Dash(__name__)
 
 tab_info = TabInf()
-tab_simulation_type = ChiquiSimulation()
+tab_simulation_type = Simulation()
 tab_result = TabResult()
 tab_asset = TabAsset()
-tab_solar_inv_config = ChiquiSolarInvConf()
-tab_solar_ratio_config = ChiquiSolarRatioConf()
-tab_battery_power_config = ChiquiBatteryPowerConf()
-tab_battery_cap_config = ChiquiBatteryCapConf()
-tab_battery_cycle_config = ChiquiBatteryCycleConf()
-tab_battery_dod_config = ChiquiBatteryDoDConf()
-tab_wind_config = ChiquiWindConf()
+tab_solar_inv_config = SolarInvConf()
+tab_solar_ratio_config = SolarRatioConf()
+tab_battery_power_config = BatteryPowerConf()
+tab_battery_cap_config = BatteryCapConf()
+tab_battery_cycle_config = BatteryCycleConf()
+tab_battery_dod_config = BatteryDoDConf()
+tab_wind_config = WindConf()
 
-tab_lat_lon = ChiquiLatLon()
-tab_date_range = ChiquiDateRange()
-tab_cash_flow = ChiquiCashFlow()
+tab_lat_lon = LatLon()
+tab_date_range = DateTimeRange()
+tab_cash_flow = CashFlow()
 
 style = \
     {

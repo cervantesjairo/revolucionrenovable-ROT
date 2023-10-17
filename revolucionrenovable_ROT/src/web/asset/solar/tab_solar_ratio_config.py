@@ -1,7 +1,8 @@
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-class ChiquiSolarRatioConf:
+
+class SolarRatioConf:
     def __init__(self):
         self.panel_name = 'jinko500'
         self.solar_ratio_fix = 1.25

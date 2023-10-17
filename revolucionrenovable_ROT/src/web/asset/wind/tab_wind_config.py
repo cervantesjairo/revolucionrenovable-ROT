@@ -1,7 +1,8 @@
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
 
-class ChiquiWindConf:
+
+class WindConf:
     def __init__(self):
         self.wind_turbine_name = 'jinko500'
         self.wind_size_fix = 100

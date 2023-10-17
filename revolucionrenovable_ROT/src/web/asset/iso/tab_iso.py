@@ -1,13 +1,13 @@
 from dash import html
-from web.asset.iso.tab_iso_price import ChiquiCaisoPrice
-from web.asset.iso.tab_iso_demand import ChiquiCaisoDemand
+from revolucionrenovable_ROT.src.web.asset.iso.tab_iso_price import IsoPrice
+from revolucionrenovable_ROT.src.web.asset.iso.tab_iso_demand import IsoDemand
 
 
 
 class TabISO:
     def __init__(self):
-        self.tab_caiso_price = ChiquiCaisoPrice()
-        self.tab_caiso_demand = ChiquiCaisoDemand()
+        self.tab_caiso_price = IsoPrice()
+        self.tab_caiso_demand = IsoDemand()
         # self.tab_solar_inv_conf.callbacks()
         self.layout = self.setup_layout()
 
