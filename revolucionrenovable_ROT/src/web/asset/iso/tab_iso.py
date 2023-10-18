@@ -1,7 +1,6 @@
 from dash import html
-from revolucionrenovable_ROT.src.web.asset.iso.tab_iso_price import IsoPrice
-from revolucionrenovable_ROT.src.web.asset.iso.tab_iso_demand import IsoDemand
-
+from revolucionrenovable_ROT.src.layers.iso.caiso.param.iso_price import IsoPrice
+from revolucionrenovable_ROT.src.layers.iso.caiso.param.iso_demand import IsoDemand
 
 
 class TabISO:

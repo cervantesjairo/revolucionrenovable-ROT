@@ -2,24 +2,27 @@ import dash
 from dash import dcc, html
 import dash_bootstrap_components as dbc
 from revolucionrenovable_ROT.src.web.information.tab_information import TabInf
-from revolucionrenovable_ROT.src.web.information.simulation_type import Simulation
+from revolucionrenovable_ROT.src.layers.simulation.param.simulation_type import Simulation
 from revolucionrenovable_ROT.src.web.asset.tab_asset import TabAsset
-from revolucionrenovable_ROT.src.web.asset.solar.tab_solar_inv_config import SolarInvConf
-from revolucionrenovable_ROT.src.web.asset.solar.tab_solar_ratio_config import SolarRatioConf
-from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_power_config import BatteryPowerConf
-from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_cap_config import BatteryCapConf
-from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_cycle_config import BatteryCycleConf
-from revolucionrenovable_ROT.src.web.asset.storage.tab_battery_dod_config import BatteryDoDConf
-from revolucionrenovable_ROT.src.web.asset.wind.tab_wind_config import WindConf
 
+### MODES
+from revolucionrenovable_ROT.src.layers.renewable.solar.mode.solar_inv_config import SolarInvConf
+from revolucionrenovable_ROT.src.layers.renewable.solar.mode.solar_ratio_config import SolarRatioConf
+from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_power_config import BatteryPowerConf
+from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_cap_config import BatteryCapConf
+from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_cycle_config import BatteryCycleConf
+from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_dod_config import BatteryDoDConf
+from revolucionrenovable_ROT.src.layers.renewable.wind.mode.wind_config import WindConf
+from revolucionrenovable_ROT.src.layers.timeseries.mode.latlon import LatLon
+
+# class TabSolar(SolarCapex, SolarOpex, SolarElec, InvElec, SolarPOI, SolarInvConf, SolarRatioConf):
 from revolucionrenovable_ROT.src.web.result.tab_result import TabResult
-from revolucionrenovable_ROT.src.layers.timeseries.coordinate.latlon import LatLon
-from revolucionrenovable_ROT.src.layers.timeseries.datetime.range import DateTimeRange
-from revolucionrenovable_ROT.src.layers.eng_economy.cashflow import CashFlow
+
+# from revolucionrenovable_ROT.src.layers.timeseries.param.datetime_range import DateTimeRange
+
 
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-#app = dash.Dash(__name__)
 
 tab_info = TabInf()
 tab_simulation_type = Simulation()
@@ -34,8 +37,8 @@ tab_battery_dod_config = BatteryDoDConf()
 tab_wind_config = WindConf()
 
 tab_lat_lon = LatLon()
-tab_date_range = DateTimeRange()
-tab_cash_flow = CashFlow()
+# tab_date_range = DateTimeRange()
+
 
 style = \
     {
@@ -85,7 +88,7 @@ tab_battery_cycle_config.setup_callbacks(app)
 tab_battery_dod_config.setup_callbacks(app)
 tab_wind_config.setup_callbacks(app)
 tab_simulation_type.setup_layout()
-tab_date_range.setup_layout()
+# tab_date_range.setup_layout()
 
 if __name__ == '__main__':
     app.run_server(debug=True)

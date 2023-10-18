@@ -1,9 +1,9 @@
 from dash import html
-from revolucionrenovable_ROT.src.layers.renewable.wind.capex import WindCapex
-from revolucionrenovable_ROT.src.layers.renewable.wind.opex import WindOpex
-from revolucionrenovable_ROT.src.layers.renewable.wind.turbine import WindTurb
-from revolucionrenovable_ROT.src.layers.renewable.wind.poi import WindPOI
-from revolucionrenovable_ROT.src.web.asset.wind.tab_wind_config import WindConf
+from revolucionrenovable_ROT.src.layers.renewable.wind.param.capex import WindCapex
+from revolucionrenovable_ROT.src.layers.renewable.wind.param.opex import WindOpex
+from revolucionrenovable_ROT.src.layers.renewable.wind.param.turbine import WindTurb
+from revolucionrenovable_ROT.src.layers.renewable.wind.param.poi import WindPOI
+from revolucionrenovable_ROT.src.layers.renewable.wind.mode.wind_config import WindConf
 
 
 class TabWind:

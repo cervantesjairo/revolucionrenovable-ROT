@@ -1,7 +1,7 @@
 from dash import html
-from revolucionrenovable_ROT.src.web.information.simulation_type import Simulation
-from revolucionrenovable_ROT.src.layers.timeseries.coordinate.latlon import LatLon
-from revolucionrenovable_ROT.src.layers.timeseries.datetime.range import DateTimeRange
+from revolucionrenovable_ROT.src.layers.simulation.param.simulation_type import Simulation
+from revolucionrenovable_ROT.src.layers.timeseries.mode.latlon import LatLon
+from revolucionrenovable_ROT.src.layers.timeseries.param.datetime_range import DateTimeRange
 from revolucionrenovable_ROT.src.layers.eng_economy.cashflow import CashFlow
 
 

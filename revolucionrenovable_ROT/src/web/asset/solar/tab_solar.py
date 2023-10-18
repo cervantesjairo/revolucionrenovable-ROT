@@ -1,11 +1,11 @@
 from dash import html
-from revolucionrenovable_ROT.src.layers.renewable.solar.capex import SolarCapex
-from revolucionrenovable_ROT.src.layers.renewable.solar.opex import SolarOpex
-from revolucionrenovable_ROT.src.layers.renewable.solar.elect_solar import SolarElec
-from revolucionrenovable_ROT.src.layers.renewable.solar.elect_inv import InvElec
-from revolucionrenovable_ROT.src.layers.renewable.solar.poi import SolarPOI
-from revolucionrenovable_ROT.src.web.asset.solar.tab_solar_inv_config import SolarInvConf
-from revolucionrenovable_ROT.src.web.asset.solar.tab_solar_ratio_config import SolarRatioConf
+from revolucionrenovable_ROT.src.layers.renewable.solar.param.capex import SolarCapex
+from revolucionrenovable_ROT.src.layers.renewable.solar.param.opex import SolarOpex
+from revolucionrenovable_ROT.src.layers.renewable.solar.param.elect_solar import SolarElec
+from revolucionrenovable_ROT.src.layers.renewable.solar.param.elect_inv import InvElec
+from revolucionrenovable_ROT.src.layers.renewable.solar.param.poi import SolarPOI
+from revolucionrenovable_ROT.src.layers.renewable.solar.mode.solar_inv_config import SolarInvConf
+from revolucionrenovable_ROT.src.layers.renewable.solar.mode.solar_ratio_config import SolarRatioConf
 # from web.information.simulation_type import ChiquiSimulation
 
 
