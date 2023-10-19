@@ -8,8 +8,6 @@ from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_cap_confi
 from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_cycle_config import BatteryCycleConf
 from revolucionrenovable_ROT.src.layers.renewable.battery.mode.battery_dod_config import BatteryDoDConf
 
-# from web.information.simulation_type import ChiquiSimulation
-
 
 class TabBattery:
     def __init__(self):

@@ -5,12 +5,8 @@ from revolucionrenovable_ROT.src.layers.timeseries.param.datetime_range import D
 from revolucionrenovable_ROT.src.layers.eng_economy.cashflow import CashFlow
 
 
-class TabInf(Simulation, CashFlow, DateTimeRange, LatLon):
+class Inf(Simulation, CashFlow, DateTimeRange, LatLon):
     def __init__(self):
-        # self.tab_sim_type = ChiquiSimulation()
-        # self.tab_plan_interest = ChiquiCashFlow()
-        # self.tab_date_range = ChiquiDateRange()
-        # self.tab_lat_lot = ChiquiLatLon()
         self.layout = self.setup_layout()
 
     def setup_layout(self):

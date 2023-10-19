@@ -11,7 +11,7 @@ from revolucionrenovable_ROT.src.msg.user_interface.inputs_ui import UserInterfa
 # from model.run import SolveModel
 
 
-class TabResult:
+class Run:
     def __init__(self):
         self.layout = html.Div([
             html.Button('Run', id='run-btn'),
@@ -22,7 +22,7 @@ class TabResult:
             html.Div(id='result-figure2'),
         ])
 
-    def setup_callbacks(self, app, tab_asset):
+    def setup_callbacks(self, app):
         call = UserInterface()
         ui_wind = call.ui_input_wind()
         ui_battery = call.ui_input_battery()

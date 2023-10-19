@@ -1,16 +1,12 @@
 from dash import dcc, html
-from revolucionrenovable_ROT.src.web.asset.solar.tab_solar import TabSolar
-from revolucionrenovable_ROT.src.web.asset.storage.tab_battery import TabBattery
-from revolucionrenovable_ROT.src.web.asset.wind.tab_wind import TabWind
-from revolucionrenovable_ROT.src.web.asset.iso.tab_iso import TabISO
+from revolucionrenovable_ROT.src.web.tab_asset.tab_solar.tab_solar import TabSolar
+from revolucionrenovable_ROT.src.web.tab_asset.tab_storage.tab_battery import TabBattery
+from revolucionrenovable_ROT.src.web.tab_asset.tab_wind.tab_wind import TabWind
+from revolucionrenovable_ROT.src.web.tab_asset.tab_iso.iso import TabISO
 
 
-class TabAsset:
+class Asset:
     def __init__(self):
-        self.tab_solar = TabSolar()
-        self.tab_battery = TabBattery()
-        self.tab_wind = TabWind()
-        self.tab_iso = TabISO()
         self.layout = self.setup_layout()
 
     def setup_layout(self):
@@ -44,11 +40,10 @@ class TabAsset:
             html.Div(
                 [dcc.Tabs(
                     [
-                        dcc.Tab(label='Solar', children=[self.tab_solar.layout], style=style, selected_style=selected_style),
-                        dcc.Tab(label='Wind', children=[self.tab_wind.layout], style=style,
-                                selected_style=selected_style),
-                        dcc.Tab(label='Storage', children=[self.tab_battery.layout], style=style, selected_style=selected_style),
-                        dcc.Tab(label='ISO', children=[self.tab_iso.layout], style=style, selected_style=selected_style),
+                        dcc.Tab(label='Solar', children=[TabSolar().layout], style=style, selected_style=selected_style),
+                        dcc.Tab(label='Wind', children=[TabWind().layout], style=style, selected_style=selected_style),
+                        dcc.Tab(label='Storage', children=[TabBattery().layout], style=style, selected_style=selected_style),
+                        dcc.Tab(label='ISO', children=[TabISO().layout], style=style, selected_style=selected_style),
                         # dcc.Tab(label='Grid', children=[], style=style, selected_style=selected_style)
                      ], vertical=False,
                 )
