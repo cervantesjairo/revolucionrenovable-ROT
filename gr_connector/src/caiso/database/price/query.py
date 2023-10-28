@@ -8,7 +8,8 @@ import pandas as pd
 import time
 import concurrent.futures
 
-class CAISO_PRICES:
+
+class CAISO_PRICE:
     """
     :param name:
     :returns df:
@@ -93,18 +94,18 @@ class CAISO_PRICES:
 
     def post_process_lmp(self, df=None, market=None):
 
+        var_name = 'lmp'
+
         column_mapping = {
-            'DAM': {'MW': 'price'},
-            'RTPD': {'PRC': 'price'},
-            'RTM': {'MW': 'price'}
+            'DAM': {'MW': var_name},
+            'RTPD': {'PRC': var_name},
+            'RTM': {'MW': var_name}
         }
 
         if market in column_mapping:
             df.rename(columns=column_mapping[market], inplace=True)
 
-        var_name = 'LMP'
-        var = [var_name]  # ['LMP', 'MCC', 'MCE', 'MCL', 'MGHG']
-        filtered_df = df[df['LMP_TYPE'].isin(var)]
+        filtered_df = df[df['LMP_TYPE'].isin(['LMP'])]    # ['LMP', 'MCC', 'MCE', 'MCL', 'MGHG']
 
         out_col = [TSm.DT_UTC, TSm.DT_FROM, TSm.DT_TO, var_name]
         df = filtered_df[out_col]

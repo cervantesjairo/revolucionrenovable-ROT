@@ -10,7 +10,7 @@ from datetime import datetime
 import concurrent.futures
 
 
-class CAISO_DEMANDS:
+class CAISO_DEMAND:
     """
     :param name:
     :returns df:
@@ -20,17 +20,17 @@ class CAISO_DEMANDS:
     def __init__(self,
                  ts_from: datetime,
                  ts_to: datetime,
-                 area: str
                  ):
         self.ts_from = ts_from
         self.ts_to = ts_to
-        self.area = area
 
 ###################  DEMAND MW-h  ##############
-    def get_demand(self, market=None, execution_type=None) -> TSm():
+    def get_demand(self, market: str = None,
+                   area: str = None,
+                   execution_type: str = None) -> TSm():
         """
-
         :param market: this parameter supports 'ACTUAL', 'DAM', '2DA', '7DA', 'RTM'
+        :param area: this parameter supports 'NP15', 'SP15', 'ZP26', 'ALL'
         :param execution_type: this parameter is only for RTM market. two options: RTD (5min) or RTPD (15min)
         :return:
         """
@@ -93,7 +93,7 @@ class CAISO_DEMANDS:
         total_df[col_dt] = total_df[col_dt].apply(pd.to_datetime)
         out_ts = df_ts.merge(total_df, how='inner', left_on=TSm.DT_UTC, right_on='INTERVALSTARTTIME_GMT')
 
-        out = self.post_process_demand(df=out_ts, market=market)
+        out = self.post_process_demand(df=out_ts, market=market, area=area)
 
         return out
 
@@ -141,12 +141,12 @@ class CAISO_DEMANDS:
 
         return url_demand
 
-    def post_process_demand(self, df=None, market=None):
+    def post_process_demand(self, df=None, market=None, area=None):
 
         var_name = 'load'
         df.rename(columns={'MW': var_name}, inplace=True)
 
-        var = [self.area]
+        var = [area]
         filtered_df = df[df['TAC_AREA_NAME'].isin(var)]
 
         out_col = [TSm.DT_UTC, TSm.DT_FROM, TSm.DT_TO, var_name]

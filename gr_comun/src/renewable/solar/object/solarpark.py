@@ -52,9 +52,6 @@ class SolarPark:
         ts_sp = self.panel_power_curve(ts_solar=ts_solar)
         ts_sp = ts_sp / self.panel_inv.panel_pmax
 
-        # ts_sp = np.where(ts_sp >= 1,
-        #                  1,
-        #                  ts_sp)
         ts_solar[Smsg.SCF] = ts_sp
 
         return ts_solar
