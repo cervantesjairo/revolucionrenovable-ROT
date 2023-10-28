@@ -1,10 +1,15 @@
 # from muiscaenergy_common.src.eng_economy.cashflow import CashFlowMeasures
 from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
-from gr_connector.src.nrel.connectors.wind import Wind
+from gr_comun.src.renewable.solar.msg import SolarMSG as Smsg
 
 from gr_connector.src.nrel.connectors.wind import Wind
+from gr_connector.src.nrel.connectors.solar import Solar
+
 from gr_comun.src.renewable.wind.object.windfarm import WindFarm
+from gr_comun.src.renewable.solar.object.solarpark import SolarPark
+
 from gr_comun.src.renewable.wind.object.turbine import WindTurbine
+from gr_comun.src.renewable.solar.object.panel import PanelInv
 
 # from muiscaenergy_connector.src.nrel.database.wind.query import NREL_WIND
 # from muiscaenergy_connector.src.nrel.database.solar.query import NREL_SOLAR
@@ -50,7 +55,71 @@ class Parametrize:
 
         df_wind = wind.get_wind_cap_factor()
 
-        return df_wind
+        x = PanelInv(
+            panel_area=df_par[Smsg.P_AREA][0],
+            panel_eff=df_par[Smsg.P_EFF][0],
+            panel_deg=df_par[Smsg.P_DEG][0],
+            inv_eff=df_par[Smsg.I_EFF][0],
+            inv_dc_loss=df_par[Smsg.I_DC_LOSS][0],
+            inv_ac_loss=df_par[Smsg.I_AC_LOSS][0],
+        )
+
+        y = SolarPark(
+            panel_inv=PanelInv(
+                panel_area=df_par[Smsg.P_AREA][0],
+                panel_eff=df_par[Smsg.P_EFF][0],
+                panel_deg=df_par[Smsg.P_DEG][0],
+                inv_eff=df_par[Smsg.I_EFF][0],
+                inv_dc_loss=df_par[Smsg.I_DC_LOSS][0],
+                inv_ac_loss=df_par[Smsg.I_AC_LOSS][0],
+            )
+        )
+
+        solar = Solar(ts_from=self.df_ui_timeseries['date_start'][0],
+                      ts_to=self.df_ui_timeseries['date_end'][0],
+                      lat=self.df_ui_timeseries['lat'][0],
+                      lon=self.df_ui_timeseries['lon'][0],
+                      solar_park=y
+                      )
+
+        df_solar = solar.get_solar_cap_factor()
+
+
+
+        x=1
+
+
+
+        # solar = Solar(ts_from=self.df_ui_timeseries['date_start'][0],
+        #               ts_to=self.df_ui_timeseries['date_end'][0],
+        #               lat=self.df_ui_timeseries['lat'][0],
+        #               lon=self.df_ui_timeseries['lon'][0],
+        #               solar_park=SolarPark(
+        #                   panel_inv=PanelInv(
+        #                       panel_area=df_par[Smsg.P_AREA][0],
+        #                       panel_eff=df_par[Smsg.P_EFF][0],
+        #                       panel_deg=df_par[Smsg.SP_D][0],
+        #                   )
+        #               )
+        #               )
+
+                      # solar_park=SolarPark(
+                      #     panel_inv=PanelInv(
+                      #         panel_area=df_par[Smsg.P_AREA][0],
+                      #         panel_eff=df_par[Smsg.P_EFF][0],
+                      #         panel_deg=df_par[Smsg.SP_D][0],
+                      #     )
+                      # )
+                      # )
+        # df_solar = solar.get_solar_cap_factor()
+                 #        )                 panel_area=None,
+                 # panel_eff=None,
+                 # panel_deg=None,
+                 # inv_eff=None,
+                 # inv_dc_loss=None,
+                 # inv_ac_loss=None):
+
+        return None#df_solar
     #     df_timeseries = self.get_timeseries_data(df_par=df_par,
     #                                              df_mode=df_mode,
     #                                              df_ts=self.df_ui_timeseries)

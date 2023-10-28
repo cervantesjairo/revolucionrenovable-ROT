@@ -1,7 +1,6 @@
 from gr_connector.src.nrel.database.resource.query import NREL_RESOURCE
 from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
 from gr_comun.src.renewable.wind.object.windfarm import WindFarm
-from gr_comun.src.renewable.wind.object.turbine import WindTurbine
 import numpy as np
 
 
@@ -39,7 +38,7 @@ class Wind:
         wind_hh = self.nrel_10m_to_hh(resource=resource)
 
         wf = self.wind_farm
-        wcf = wf.cap_factor(ts_windspeed=wind_hh)
+        wcf = wf.cap_factor(ts_wind=wind_hh)
 
         df_wcf = self.wind_msg(df=wcf)
 

@@ -4,6 +4,14 @@ import pandas as pd
 
 class SolarMSG(Message):
     # WS = 'wind_speed'
+    GHI = 'solar_ghi'
+    DHI = 'solar_dhi'
+    DNI = 'solar_dni'
+    TEMP = 'solar_temp'
+
+    SP = 'solar_power'
+    SCF = 'solar_capacity_factor'
+
     P_AREA = 'solar_panel_area'
     P_EFF = 'solar_panel_eff'
     P_DEG = 'solar_panel_degradation'
@@ -15,6 +23,6 @@ class SolarMSG(Message):
         self.df = pd.DataFrame()
 
     def append_wind_speed(self, value):
-        self.df[SolarMSG.WS] = value
+        self.df[SolarMSG.SP] = value
         return self
 

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 
-class WindFarm(WindTurbine):
+class WindFarm:
     """
 
     """
@@ -18,7 +18,7 @@ class WindFarm(WindTurbine):
                  wind_size_fix=None,
                  wind_size_lb_min=None,
                  wind_size_ub_max=None,
-                 turbine: WindTurbine() = None,
+                 turbine: WindTurbine = None,
                  ):
         # super().__init__()
         self.wind_poi = wind_poi
@@ -32,17 +32,17 @@ class WindFarm(WindTurbine):
         self.wind_size_ub_max = wind_size_ub_max
         self.turbine = turbine
 
-    def cap_factor(self, ts_windspeed=None):
+    def cap_factor(self, ts_wind=None):
 
         ts_wp = self.power_curve(rated_power=self.turbine.rated_power,
                                  v_rated=self.turbine.v_rated,
                                  v_cut_in=self.turbine.v_cut_in,
                                  v_cut_out=self.turbine.v_cut_out,
-                                 ts_ws=ts_windspeed)
+                                 ts_ws=ts_wind)
 
-        ts_windspeed[Wmsg.WCF] = ts_wp[Wmsg.WP] / self.turbine.rated_power
+        ts_wind[Wmsg.WCF] = ts_wp[Wmsg.WP] / self.turbine.rated_power
 
-        return ts_windspeed
+        return ts_wind
 
     def power_curve(self, ts_ws=None, rated_power=None, v_rated=None, v_cut_in=None, v_cut_out=None):
         turbine = self.turbine
