@@ -4,9 +4,9 @@ import pandas as pd
 
 class SolarMSG(Message):
     # WS = 'wind_speed'
-    GHI = 'solar_ghi'
-    DHI = 'solar_dhi'
-    DNI = 'solar_dni'
+    GHI = 'ghi'
+    DHI = 'dhi'
+    DNI = 'dni'
     TEMP = 'solar_temp'
 
     SP = 'solar_power'
