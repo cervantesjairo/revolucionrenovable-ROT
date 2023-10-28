@@ -36,31 +36,12 @@ class Solar:
 
         sp = self.solar_park
         scf = sp.cap_factor(ts_solar=resource)
+        df_scf = self.solar_msg(df=scf)
 
-        #
-        # df_scf = self.solar_msg(df=scf)
+        return df_scf
 
-        return sp #df_scf
+    def solar_msg(self, df=None):
+        col_msg = [Smsg.DT_UTC, Smsg.DT_FROM, Smsg.DT_TO, Smsg.SCF]
+        df = df[col_msg]
 
-    # def get_solar_factor(self):
-    #     panel_eff_area = self.df_panel['solar_panel_area'][0] * self.df_panel['solar_panel_eff'][0] / 100
-    #
-    #     df = self.df_resource
-    #
-    #     df['watt'] = df['ghi'] * panel_eff_area
-    #     panel_watt = max(df['watt'])
-    #
-    #     UNIT = 1e3
-    #     panel_quantity_per_kw = UNIT / panel_watt
-    #     df['solar'] = df['watt'] * panel_quantity_per_kw / UNIT
-    #
-    #     df = self.post_process_solar(df=df)
-    #
-    #     return df
-    #
-    # def post_process_solar(self, df=None):
-    #
-    #     columns_to_keep = ['local_datetime', 'solar']  # Replace with your actual column names
-    #     df = df[columns_to_keep]
-    #
-    #     return df
+        return df
