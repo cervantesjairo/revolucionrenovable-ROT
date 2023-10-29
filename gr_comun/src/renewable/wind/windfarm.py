@@ -1,6 +1,5 @@
-from gr_comun.src.renewable.wind.object.turbine import WindTurbine
-from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
-import pandas as pd
+from gr_comun.src.renewable.wind.object.elements import WindTurbine, WindCost, WindMode
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
 import numpy as np
 
 
@@ -9,28 +8,18 @@ class WindFarm:
 
     """
 
-    def __init__(self, wind_poi=None,
-                 wind_size_mode=None,
-                 wind_cost=None,
-                 wind_cost_inter=None,
-                 wind_cost_fix=None,
-                 wind_cost_variable=None,
-                 wind_size_fix=None,
-                 wind_size_lb_min=None,
-                 wind_size_ub_max=None,
+    def __init__(self,
+                 poi=None,
+                 mode: WindMode = None,
+                 cost: WindCost = None,
                  turbine: WindTurbine = None,
+                 loss=None
                  ):
-        # super().__init__()
-        self.wind_poi = wind_poi
-        self.wind_size_mode = wind_size_mode
-        self.wind_cost = wind_cost
-        self.wind_cost_inter = wind_cost_inter
-        self.wind_cost_fix = wind_cost_fix
-        self.wind_cost_variable = wind_cost_variable
-        self.wind_size_fix = wind_size_fix
-        self.wind_size_lb_min = wind_size_lb_min
-        self.wind_size_ub_max = wind_size_ub_max
+        self.poi = poi
+        self.mode = mode
+        self.cost = cost
         self.turbine = turbine
+        self.loss = loss
 
     def cap_factor(self, ts_wind=None):
 

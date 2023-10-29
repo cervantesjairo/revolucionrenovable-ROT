@@ -1,5 +1,4 @@
-from datetime import datetime
-from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
 
 
 class UserInterface:
@@ -36,12 +35,12 @@ class UserInterface:
         ui_input_wind = {
             'wind_poi': 'wind_poi',
 
-            'wind_size_mode': 'wind_size_mode',
-
             'wind_cost': 'wind_cost',
             'wind_cost_inter': 'wind_cost_inter',
             'wind_cost_fix': 'wind_cost_fix',
             'wind_cost_variable': 'wind_cost_variable',
+
+            'wind_size_mode': 'wind_size_mode',
             'wind_size_fix': 'wind_size_fix',
             'wind_size_lb_min': 'wind_size_lb_min',
             'wind_size_ub_max': 'wind_size_ub_max',
@@ -68,13 +67,6 @@ class UserInterface:
 
             'solar_inverter_mode': 'solar_inverter_mode',
             'solar_ratio_mode': 'solar_ratio_mode',
-
-            'solar_cost_panel': 'solar_cost_panel',
-            'solar_cost_bos': 'solar_cost_bos',
-            'solar_cost_inverter': 'solar_cost_inverter',
-            'solar_cost_variable': 'solar_cost_variable',
-            'solar_cost_fix': 'solar_cost_fix',
-
             'solar_size_fix': 'solar_size_fix',
             'solar_size_lb_min': 'solar_size_lb_min',
             'solar_size_ub_max': 'solar_size_ub_max',
@@ -82,6 +74,13 @@ class UserInterface:
             'solar_ratio_fix': 'solar_ratio_fix',
             'solar_ratio_lb_min': 'solar_ratio_lb_min',
             'solar_ratio_ub_max': 'solar_ratio_ub_max',
+
+            'solar_cost_panel': 'solar_cost_panel',
+            'solar_cost_bos': 'solar_cost_bos',
+            'solar_cost_inverter': 'solar_cost_inverter',
+            'solar_cost_variable': 'solar_cost_variable',
+            'solar_cost_fix': 'solar_cost_fix',
+
 
             'solar_panel_area': 'solar_panel_area',
             'solar_panel_eff': 'solar_panel_eff',

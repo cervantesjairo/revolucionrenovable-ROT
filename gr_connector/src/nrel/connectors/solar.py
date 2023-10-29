@@ -1,9 +1,7 @@
 from gr_connector.src.nrel.database.resource.query import NREL_RESOURCE
-from gr_comun.src.renewable.solar.msg import SolarMSG as Smsg
-from gr_comun.src.renewable.solar.object.solarpark import SolarPark
+from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
+from gr_comun.src.renewable.solar.solarpark import SolarPark
 # from gr_comun.src.renewable.solar.
-import numpy as np
-
 
 
 class Solar:

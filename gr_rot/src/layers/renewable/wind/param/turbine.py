@@ -1,4 +1,4 @@
-from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
 from dash import dcc, html
 
 

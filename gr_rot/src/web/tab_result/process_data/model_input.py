@@ -1,15 +1,20 @@
 # from muiscaenergy_common.src.eng_economy.cashflow import CashFlowMeasures
-from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
-from gr_comun.src.renewable.solar.msg import SolarMSG as Smsg
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
+from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
 
 from gr_connector.src.nrel.connectors.wind import Wind
 from gr_connector.src.nrel.connectors.solar import Solar
 
-from gr_comun.src.renewable.wind.object.windfarm import WindFarm
-from gr_comun.src.renewable.solar.object.solarpark import SolarPark
+from gr_comun.src.renewable.wind.windfarm import WindFarm
+from gr_comun.src.renewable.solar.solarpark import SolarPark
+from gr_comun.src.renewable.storage.batterystorage import BES
+from gr_comun.src.renewable.asset.ren_asset import RenewableAsset
 
-from gr_comun.src.renewable.wind.object.turbine import WindTurbine
-from gr_comun.src.renewable.solar.object.panel import PanelInv
+from gr_comun.src.renewable.wind.object.elements import WindTurbine, WindCost, WindMode
+from gr_comun.src.renewable.solar.object.elements import PanelInv, SolarCost, SolarMode
+from gr_comun.src.renewable.storage.object.elements import Battery, BatteryCost, BatteryMode
+
+from gr_rot.src.web.tab_result.process_data.data_type import DataFormat
 
 # from muiscaenergy_connector.src.nrel.database.wind.query import NREL_WIND
 # from muiscaenergy_connector.src.nrel.database.solar.query import NREL_SOLAR
@@ -28,6 +33,33 @@ from gr_comun.src.renewable.solar.object.panel import PanelInv
 
 
 class Parametrize:
+    """
+            wind_farm = WindFarm(
+            poi=100,
+            loss=None,
+            turbine=WindTurbine(
+                rated_power=df_par[Wmsg.WT_RP][0],
+                v_rated=df_par[Wmsg.WT_VR][0],
+                v_cut_in=df_par[Wmsg.WT_VI][0],
+                v_cut_out=df_par[Wmsg.WT_VO][0],
+                hub_height=df_par[Wmsg.WT_HH][0],
+                rotor_diameter=df_par[Wmsg.WT_RD][0],
+            ),
+            cost=WindCost(
+                capex_wind=10,
+                capex_inter=20,
+                opex_fix=30,
+                opex_variable=40,
+            ),
+            mode=WindMode(
+                size_conf='fix', ##fix, range, optimize
+                size_fix=10,
+                size_lb_min=20,
+                size_ub_max=30,
+            ),
+        )
+    """
+
     def __init__(self, df_ui_timeseries=None, df_ui_input=None):
         self.df_ui_timeseries = df_ui_timeseries
         self.df_ui_input = df_ui_input
@@ -37,89 +69,166 @@ class Parametrize:
         df_par = self.df_ui_input.select_dtypes(exclude='object')
         df_mode = self.df_ui_input.select_dtypes(include='object')
 
+        wind_farm = WindFarm(
+            poi=100,
+            loss=None,
+            turbine=WindTurbine(
+                rated_power=df_par[Wmsg.WT_RP][0],
+                v_rated=df_par[Wmsg.WT_VR][0],
+                v_cut_in=df_par[Wmsg.WT_VI][0],
+                v_cut_out=df_par[Wmsg.WT_VO][0],
+                hub_height=df_par[Wmsg.WT_HH][0],
+                rotor_diameter=df_par[Wmsg.WT_RD][0],
+            ),
+            cost=WindCost(
+                capex_wind=10,
+                capex_inter=20,
+                opex_fix=30,
+                opex_variable=40,
+            ),
+            mode=WindMode(
+                size_conf='fix', ##fix, range, optimize
+                size_fix=10,
+                size_lb_min=20,
+                size_ub_max=30,
+            ),
+        )
+
         wind = Wind(ts_from=self.df_ui_timeseries['date_start'][0],
                     ts_to=self.df_ui_timeseries['date_end'][0],
                     lat=self.df_ui_timeseries['lat'][0],
                     lon=self.df_ui_timeseries['lon'][0],
-                    wind_farm=WindFarm(
-                        turbine=WindTurbine(
-                            rated_power=df_par[Wmsg.WT_RP][0],
-                            v_rated=df_par[Wmsg.WT_VR][0],
-                            v_cut_in=df_par[Wmsg.WT_VI][0],
-                            v_cut_out=df_par[Wmsg.WT_VO][0],
-                            hub_height=df_par[Wmsg.WT_HH][0],
-                            rotor_diameter=df_par[Wmsg.WT_RD][0]
-                        )
+                    wind_farm=wind_farm
                     )
-                    )
-
         df_wind = wind.get_wind_cap_factor()
 
-        x = PanelInv(
-            panel_area=df_par[Smsg.P_AREA][0],
-            panel_eff=df_par[Smsg.P_EFF][0],
-            panel_deg=df_par[Smsg.P_DEG][0],
-            inv_eff=df_par[Smsg.I_EFF][0],
-            inv_dc_loss=df_par[Smsg.I_DC_LOSS][0],
-            inv_ac_loss=df_par[Smsg.I_AC_LOSS][0],
-        )
-
-        y = SolarPark(
+        solar_park = SolarPark(
+            poi=100,
+            loss=None,
             panel_inv=PanelInv(
+                panel_power_nominal=535,
                 panel_area=df_par[Smsg.P_AREA][0],
                 panel_eff=df_par[Smsg.P_EFF][0],
                 panel_deg=df_par[Smsg.P_DEG][0],
                 inv_eff=df_par[Smsg.I_EFF][0],
                 inv_dc_loss=df_par[Smsg.I_DC_LOSS][0],
                 inv_ac_loss=df_par[Smsg.I_AC_LOSS][0],
-            )
+            ),
+            cost=SolarCost(
+                capex_panel=10,
+                capex_bos=20,
+                capex_inv=30,
+                opex_var=40,
+                opex_fix=50,
+            ),
+            mode=SolarMode(
+                inv_conf='fix',
+                inv_fix=10,
+                inv_lb_min=20,
+                inv_ub_max=30,
+                ratio_conf='fix',
+                ratio_fix=10,
+                ratio_lb_min=20,
+                ratio_ub_max=30,
+            ),
+
         )
 
         solar = Solar(ts_from=self.df_ui_timeseries['date_start'][0],
                       ts_to=self.df_ui_timeseries['date_end'][0],
                       lat=self.df_ui_timeseries['lat'][0],
                       lon=self.df_ui_timeseries['lon'][0],
-                      solar_park=y
+                      solar_park=solar_park
                       )
 
         df_solar = solar.get_solar_cap_factor()
 
+        bes = BES(
+            poi=100,
+            loss=None,
+            battery=Battery(
+                rte=0.9),
+            cost=BatteryCost(
+                capex_power=10,
+                capex_capacity=20,
+                opex_fix=30,
+                opex_var=40,
+            ),
+            mode=BatteryMode(
+                power_conf='fix',
+                power_fix=10,
+                power_lb_min=20,
+                power_ub_max=30,
+                dur_conf='fix',
+                dur_fix=10,
+                dur_lb_min=20,
+                dur_ub_max=30,
+                dod_conf='fix',
+                dod_fix=10,
+                dod_lb_min=20,
+                dod_ub_max=30,
+                cycle_conf='fix',
+                cycle_fix=10,
+                cycle_lb_min=20,
+                cycle_ub_max=30,
+            ),
+        )
+
+        asset = RenewableAsset(
+            poi=100,
+            loss=None,
+            mode=None,
+            wind=wind_farm,
+            solar=solar_park,
+            storage=bes,
+        )
 
 
-        x=1
 
 
+        # PRICE TIMESERIES
+        # price_market_id = 'DAM'
+        # price_node_id = df_mode['iso_price_dropdown_var'][0]
+        # price = LMP(ts_from=self.df_ui_timeseries['date_start'][0],
+        #             ts_to=self.df_ui_timeseries['date_end'][0],
+        #             )
+        # if price_market_id == 'DAM':
+        #     lmp = price.get_lmp_da(node=price_node_id[0])
+        #
+        # if price_market_id == 'RTPD':
+        #     lmp = price.get_lmp_rtpd(node=price_node_id[0])
+        #
+        # if price_market_id == 'RTM':
+        #     lmp = price.get_lmp_rtm(node=price_node_id[0])
 
-        # solar = Solar(ts_from=self.df_ui_timeseries['date_start'][0],
-        #               ts_to=self.df_ui_timeseries['date_end'][0],
-        #               lat=self.df_ui_timeseries['lat'][0],
-        #               lon=self.df_ui_timeseries['lon'][0],
-        #               solar_park=SolarPark(
-        #                   panel_inv=PanelInv(
-        #                       panel_area=df_par[Smsg.P_AREA][0],
-        #                       panel_eff=df_par[Smsg.P_EFF][0],
-        #                       panel_deg=df_par[Smsg.SP_D][0],
-        #                   )
-        #               )
-        #               )
+        # DEMAND TIMESERIES
+        # demand_id = df_mode['iso_demand_dropdown_var'][0]
+        # demand_id = 'ACTUAL'
+        # demand_factor = df_par['iso_demand_size_factor'][0]
+        # load = LOAD(ts_from=self.df_ui_timeseries['date_start'][0],
+        #             ts_to=self.df_ui_timeseries['date_end'][0],
+        #             )
+        #
+        # if demand_id == 'ACTUAL':
+        #     demand = load.get_demand_actual(area='CA ISO-TAC')
+        #
+        #     if demand_factor:
+        #         iso_load_max = demand['load'].max()
+        #         demand['load'] = (demand_factor / iso_load_max) * demand['load']
+        #
+        # x=1
 
-                      # solar_park=SolarPark(
-                      #     panel_inv=PanelInv(
-                      #         panel_area=df_par[Smsg.P_AREA][0],
-                      #         panel_eff=df_par[Smsg.P_EFF][0],
-                      #         panel_deg=df_par[Smsg.SP_D][0],
-                      #     )
-                      # )
-                      # )
-        # df_solar = solar.get_solar_cap_factor()
-                 #        )                 panel_area=None,
-                 # panel_eff=None,
-                 # panel_deg=None,
-                 # inv_eff=None,
-                 # inv_dc_loss=None,
-                 # inv_ac_loss=None):
+        x, y = DataFormat(ts_wind=df_wind,
+                          # ts_solar=solar,
+                          # ts_price=lmp,
+                          # ts_demand=demand,
+                          asset=asset
+                          ).get_data_type()
 
-        return None#df_solar
+
+        return None
+
+        #df_solar
     #     df_timeseries = self.get_timeseries_data(df_par=df_par,
     #                                              df_mode=df_mode,
     #                                              df_ts=self.df_ui_timeseries)
@@ -165,81 +274,7 @@ class Parametrize:
     #
     #     return [info_asset, info_poi]
     #
-    # def get_timeseries_data(self, df_par=None, df_mode=None, df_ts=None):
-    #     # get time series
-    #     lat = df_ts['lat'][0]
-    #     lon = df_ts['lon'][0]
-    #     start = df_ts['date_start'][0]
-    #     end = df_ts['date_end'][0]
-    #
-    #     timeseries = get_timeseries_latlon(lat=lat,
-    #                                        lon=lon,
-    #                                        ts_from=start,
-    #                                        ts_to=end)
-    #
-    #     _asset = df_mode['info_asset_mode'][0]
-    #     if 'wind' in _asset or 'solar' in _asset:
-    #         df_resource = NREL_RESOURCE(lat=lat,
-    #                                     lon=lon,
-    #                                     ts_from=start,
-    #                                     ts_to=end,
-    #                                     var='ghi,wind_speed').get_resource()
-    #
-    #
-    #         df_panel = df_par[['solar_panel_area', 'solar_panel_eff', 'solar_panel_degradation']]
-    #         df_turbine = df_par[['wind_turbine_rated_power', 'wind_turbine_rotor_diameter', 'wind_turbine_hub_height',
-    #                              'wind_turbine_v_cut_in', 'wind_turbine_v_rated', 'wind_turbine_v_cut_out']]
-    #
-    #         if 'wind_and_solar' == _asset or 'wind_and_solar_and_battery' == _asset:
-    #             wind = NREL_WIND(df_turbine=df_turbine, df_resource=df_resource).get_wind_factor()
-    #             solar = NREL_SOLAR(df_panel=df_panel, df_resource=df_resource).get_solar_factor()
-    #             renewable = pd.merge(wind, solar, on='local_datetime')
-    #
-    #         if 'wind' == _asset or 'wind_and_battery' == _asset:
-    #             wind = NREL_WIND(df_turbine=df_turbine, df_resource=df_resource).get_wind_factor()
-    #             renewable = wind
-    #
-    #         if 'solar' == _asset or 'solar_and_battery' == _asset:
-    #             solar = NREL_SOLAR(df_panel=df_panel, df_resource=df_resource).get_solar_factor()
-    #             renewable = solar
-    #
-    #     price_market_id = 'DAM'         #TODO: add more options
-    #     price_node_id = df_mode['iso_price_dropdown_var'][0]    ## what are the list of options. check the node reference for teh options
-    #
-    #     if price_market_id:
-    #         iso_lmp = CAISO_PRICE().get_lmp(market=price_market_id,
-    #                                         node=price_node_id[0],
-    #                                         ts_from=start,
-    #                                         ts_to=end,
-    #                                         )
-    #     else:
-    #         print("Price market ID is None. Please provide a valid value.")
-    #         raise ValueError("Price market ID is empty. Please provide a valid value.")
-    #
-    #     demand_id = df_mode['iso_demand_dropdown_var'][0]
-    #     demand_factor = df_par['iso_demand_size_factor'][0]
-    #
-    #     iso_load = pd.DataFrame()
-    #     if demand_id:
-    #         iso_load = CAISO_DEMAND().get_demand(market='ACTUAL',
-    #                                              ts_from=start,
-    #                                              ts_to=end,
-    #                                              execution_type=None)
-    #         if demand_factor:
-    #             iso_load_max = iso_load['load'].max()
-    #             iso_load['load'] = (demand_factor / iso_load_max) * iso_load['load']
-    #
-    #         merged_df = pd.merge(iso_lmp, iso_load, on='local_datetime')
-    #     if not demand_id:
-    #         merged_df = iso_lmp
-    #
-    #     if 'wind' in _asset or 'solar' in _asset:
-    #         renewable_merged = pd.merge(merged_df, renewable, on='local_datetime')
-    #         df = pd.merge(timeseries, renewable_merged, on='local_datetime')
-    #     else:
-    #         df = pd.merge(timeseries, merged_df, on='local_datetime')
-    #
-    #     return df
+
     #
     # def get_solar_data(self, df_par=None, df_mode=None):
     #

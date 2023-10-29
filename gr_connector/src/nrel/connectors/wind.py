@@ -1,7 +1,6 @@
 from gr_connector.src.nrel.database.resource.query import NREL_RESOURCE
-from gr_comun.src.renewable.wind.msg import WindMSG as Wmsg
-from gr_comun.src.renewable.wind.object.windfarm import WindFarm
-import numpy as np
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
+from gr_comun.src.renewable.wind.windfarm import WindFarm
 
 
 class Wind:
@@ -16,7 +15,6 @@ class Wind:
                  lat=None,
                  wind_farm: WindFarm = None,
                  ):
-        # super().__init__()
         self.start = ts_from
         self.end = ts_to
         self.lon = lon
