@@ -16,5 +16,5 @@ class Operations1:
         return self.num1 + self.num2
 
     # Method to multiply two numbers
-    def multiply(self):
+    def subtract(self):
         return self.num1 - self.num2

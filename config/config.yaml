@@ -1,3 +1,5 @@
 
 defaults:
   - db: flow1 #mysql #
+#  - dir2 : flow1 #mysql #
+  - dir2: flow2 #mysql #

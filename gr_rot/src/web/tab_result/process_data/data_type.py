@@ -8,7 +8,8 @@ class DataFormat:
                  ts_solar=None,
                  ts_price=None,
                  ts_demand=None,
-                 asset=None):
+                 asset: RenewableAsset = None,
+                    ):
         self.ts_wind = ts_wind
         self.ts_solar = ts_solar
         self.ts_price = ts_price
@@ -16,6 +17,13 @@ class DataFormat:
         self.asset = asset
 
     def get_data_type(self):
+        x= self.asset.solar.cost.capex_panel
+
+
+        if 'solar' in self.asset.mode:
+            df = self.get_solar_data(df_par=self.asset.par, df_mode=self.asset.mode)
+
+            return None
 
 
         return None

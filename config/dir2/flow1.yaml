@@ -1,0 +1,10 @@
+sumsub:
+  - _target_: agents.file1.Operations1
+    num1: 1
+    num2: 2.5
+
+
+#  muldiv:
+  - _target_: agents.file2.Operations2
+    num1: ${sumsub}.add() #1
+    num2: 2.5

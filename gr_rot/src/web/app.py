@@ -6,7 +6,7 @@ from gr_rot.src.web.tab_information.info import Inf
 from gr_rot.src.web.tab_asset.asset import Asset
 from gr_rot.src.web.tab_result.run import Run
 
-from config import setup_callbacks
+from gr_rot.src.web.config import setup_callbacks
 
 # Crear la aplicación Dash
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])

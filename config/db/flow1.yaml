@@ -2,19 +2,9 @@ sumsub:
   _target_: agents.file1.Operations1
   num1: 1
   num2: 2.5
-#  _call_: add
 
-# - _target_: agents.file2.Operations2
-#   num1: 1
-#   num2: 2.5
-#  add: Operations1 = instantiate(cfg.sumsubstract.add)
-
-#  num1: 1
+#muldiv:
+#  _target_: agents.file2.Operations2
+#  num1: 5
 #  num2: 2.5
-#  add: Operations1 = instantiate(cfg.sumsubstract.add)
 
-#
-#user : User = instantiate(cfg.bond)
-#assert isinstance(user, user.User)
-#assert user.name == "Bond"
-#assert user.age == 7

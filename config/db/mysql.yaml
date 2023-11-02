@@ -1,0 +1,16 @@
+test1:
+  _target_: agents.file1.Operations1
+  num1: 1
+  num2: 2.5
+#test1:
+#  _target_: agents.test1.MySQLConnection
+#  host: localhost
+#  user: root
+#  password: 1234
+
+#
+#operation1:
+#  _target_: agents.file1.Operations1
+#  num1: 1
+#  num2: 2.5
+
