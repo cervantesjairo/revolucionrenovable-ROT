@@ -1,4 +1,4 @@
-from model.asset.model_asset import AssetModel
+# from model.asset.model_asset import AssetModel
 from pyomo.environ import *
 import dash
 from dash import dcc, html
@@ -7,39 +7,79 @@ import time
 import datetime
 import plotly.graph_objs as go
 import plotly.subplots as sp
+from gr_models.src.renewable.asset.model_asset import ModelSets, ModelParams, ModelVars, ModelObjective, ModelConstraints
 
-class ModelSolution(AssetModel):
+
+class ModelSolution:
+
+    def __init__(self,
+                 # model=AbstractModel(),
+                 asset=None):
+        # self.model = model
+        # self.model.dual = Suffix(direction=Suffix.IMPORT_EXPORT)
+        self.asset = asset['info_asset_mode'][0]
+        self._asset = asset['info_asset_mode'][0] # TODO: remove this line adnf fix code
 
     def solve(self):
+
+        # instanciar los objectos/classe (sets, params, vars, objs, cons) object to build the model, i.e. el modelo abstracto.
+
+        model = AbstractModel()
+        model.dual = Suffix(direction=Suffix.IMPORT_EXPORT)
+        ModelSets(model=model,
+                  asset=self.asset)
+        ModelParams(model=model,
+                    asset=self.asset)
+        ModelVars(model=model,
+                  asset=self.asset)
+        ModelObjective(model=model,
+                       asset=self.asset)
+        ModelConstraints(model=model,
+                         asset=self.asset)
+
+
+        # ModelSets(model=self.model,
+        #           asset=self.asset)
+        # ModelParams(model=self.model,
+        #             asset=self.asset)
+        # ModelVars(model=self.model,
+        #           asset=self.asset)
+        # ModelObjective(model=self.model,
+        #                asset=self.asset)
+        # ModelConstraints(model=self.model,
+        #                  asset=self.asset)
+
         opt = SolverFactory('glpk')
         if self._asset == 'wind':
-            instance = self.model.create_instance(
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_w.dat')
 
         if self._asset == 'solar':
-            instance = self.model.create_instance(
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_s.dat')
 
         if self._asset == 'battery':
-            instance = self.model.create_instance(
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_b.dat')
 
         if self._asset == 'wind_and_solar':
-            instance = self.model.create_instance(
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_ws.dat')
 
         if self._asset == 'wind_and_battery':
-            instance = self.model.create_instance(
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_wb.dat')
 
         if self._asset == 'solar_and_battery':
-            instance = self.model.create_instance(
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_sb.dat')
 
         if self._asset == 'wind_and_solar_and_battery':
-            instance = self.model.create_instance(
+            # instance = self.model.create_instance(
+            #     filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_wsb.dat')
+            instance = model.create_instance(
                 filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_wsb.dat')
-        # else:
+
         #     instance = self.model.create_instance(
         #         filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_s.dat')
         now = datetime.datetime.now()

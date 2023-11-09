@@ -1,4 +1,9 @@
 from pyomo.environ import *
+from gr_models.src.renewable.asset.nomenclature.wind import WindNomenclature as Wn
+from gr_models.src.renewable.asset.nomenclature.solar import SolarNomenclature as Sn
+from gr_models.src.renewable.asset.nomenclature.battery import BatteryNomenclature as Bn
+
+from gr_models.src.renewable.asset.utils import *
 
 
 class BSet:
@@ -13,7 +18,7 @@ class BSet:
         return self
 
     def _PERIOD(self, model):
-        model.PERIOD = Set()
+        set(model, Bn.PERIOD)
 
 
 class BPar:
@@ -47,61 +52,61 @@ class BPar:
         return self
 
     def _battery_poi(self, model):
-        model.battery_poi = Param()
+        par(model, Bn.pPOI)
 
     def _battery_power_fix(self, model):
-        model.battery_power_fix = Param()
+        par(model, Bn.pPowFix)
 
     def _battery_power_lb_min(self, model):
-        model.battery_power_lb_min = Param()
+        par(model, Bn.pPowLB)
 
     def _battery_power_ub_max(self, model):
-        model.battery_power_ub_max = Param()
+        par(model, Bn.pPowUB)
 
     def _battery_duration_fix(self, model):
-        model.battery_duration_fix = Param()
+        par(model, Bn.pDurFix)
 
     def _battery_duration_lb_min(self, model):
-        model.battery_duration_lb_min = Param()
+        par(model, Bn.pDurLB)
 
     def _battery_duration_ub_max(self, model):
-        model.battery_duration_ub_max = Param()
+        par(model, Bn.pDurUB)
 
     def _battery_cost_power(self, model):
-        model.battery_cost_power = Param()
+        par(model, Bn.pCostPow)
 
     def _battery_cost_capacity(self, model):
-        model.battery_cost_capacity = Param()
+        par(model, Bn.pCostCap)
 
     def _battery_cost_fix(self, model):
-        model.battery_cost_fix = Param()
+        par(model, Bn.pCostFix)
 
     def _battery_cost_variable(self, model):
-        model.battery_cost_variable = Param()
+        par(model, Bn.pCostVar)
 
     def _battery_rte(self, model):
-        model.battery_rte = Param()
+        par(model, Bn.pRTE)
 
     def _battery_rte_charge(self, model):
-        model.battery_rte_charge = Param(default=1)
+        par(model, Bn.pRTEChg)
 
     def _battery_rte_discharge(self, model):
-        model.battery_rte_discharge = Param(default=1)
+        par(model, Bn.pRTEDch)
 
     def _battery_dod_lb_min(self, model):
-        model.battery_dod_lb_min = Param()
+        par(model, Bn.pDODLB)
 
     def _battery_dod_ub_max(self, model):
-        model.battery_dod_ub_max = Param()
+        par(model, Bn.pDODUB)
 
     def _battery_cycle_lb_min(self, model):
-        model.battery_cycle_lb_min = Param()
+        par(model, Bn.pCycLB)
 
     def _battery_cycle_ub_max(self, model):
-        model.battery_cycle_ub_max = Param()
+        par(model, Bn.pCycUB)
 
     def _battery_lmp(self, model):
-        model.battery_lmp = Param(model.PERIOD)
+        par(model, Bn.pLMP)
 
 
 class BVar:
@@ -121,63 +126,60 @@ class BVar:
         self._B_DISCHARGE(model)
         self._GtoB(model)
         self._BtoA(model)
-        self._WtoB(model) if config_mode['info_asset_mode'][0] in ['wind_and_battery', 'wind_and_solar_and_battery'] else None
-        self._StoB(model) if config_mode['info_asset_mode'][0] in ['solar_and_battery', 'wind_and_solar_and_battery'] else None
+        self._WtoB(model) if config_mode in ['wind_and_battery', 'wind_and_solar_and_battery'] else None
+        self._StoB(model) if config_mode in ['solar_and_battery', 'wind_and_solar_and_battery'] else None
 
         return self
 
-
     def _BATTERY_INV_COST(self, model):
-        model.BATTERY_INV_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vCostInvst, initialize=0)
 
     def _BATTERY_PROD_COST(self, model):
-        model.BATTERY_PROD_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vCostProd, initialize=0)
 
     def _BATTERY_GRID_COST(self, model):
-        model.BATTERY_GRID_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vCostGrid, initialize=0)
 
     def _BATTERY_GRID_REVENUE(self, model):
-        model.BATTERY_GRID_REVENUE = Var(within=NonNegativeReals, initialize=0)
-
+        var_pos(model, Bn.vRevGrid, initialize=0)
 
     def _BATTERY_SIZE_POWER(self, model):
-        model.BATTERY_SIZE_POWER = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vSizePow, initialize=0)
 
     def _BATTERY_SIZE_CAPACITY(self, model):
-        model.BATTERY_SIZE_CAPACITY = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vSizeCap, initialize=0)
 
     def _B_SOC(self, model):
-        model.B_SOC = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vSOC, Bn.PERIOD, initialize=0)
 
     def _B_STATE(self, model):
-        model.B_STATE = Var(model.PERIOD, within=Binary, initialize=0)
+        var_bin(model, Bn.vState, Bn.PERIOD, initialize=0)
 
     def _B_CHARGE(self, model):
-        model.B_CHARGE = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Bn.vChg, Bn.PERIOD, initialize=0)
 
     def _B_DISCHARGE(self, model):
-        model.B_DISCHARGE = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
-        
+        var_pos(model, Bn.vDch, Bn.PERIOD, initialize=0)
+
     def _GtoB(self, model):
-        model.GtoB = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
-        
+        var_pos(model, Bn.vGtoB, Bn.PERIOD, initialize=0)
+
     def _BtoA(self, model):
-        model.BtoA = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
-        
+        var_pos(model, Bn.vBtoA, Bn.PERIOD, initialize=0)
+
     def _WtoB(self, model):
-        model.WtoB = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
-        
+        var_pos(model, Bn.vWtoB, Bn.PERIOD, initialize=0)
+
     def _StoB(self, model):
-        model.StoB = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
-             
+        var_pos(model, Bn.vStoB, Bn.PERIOD, initialize=0)
+
           
 class BObj:
     def __init__(self, model, config_mode):
         self._battery_objective(model, config_mode)
 
-
     def _battery_objective(self, model, config_mode):
-        self._obj_battery_revenue(model) if config_mode['info_asset_mode'][0] == 'battery' else None
+        self._obj_battery_revenue(model) if config_mode == 'battery' else None
         self._battery_exp_grid_revenue(model)
         self._battery_exp_grid_cost(model)
         self._battery_exp_invest_cost(model)
@@ -187,33 +189,31 @@ class BObj:
 
     def _obj_battery_revenue(self, model):
         def obj_battery_revenue_rule(model):
-            return (model.BATTERY_GRID_REVENUE - model.BATTERY_GRID_COST) - (model.BATTERY_INV_COST + model.BATTERY_PROD_COST)
+            return (v(model, Bn.vRevGrid) - v(model, Bn.vCostGrid)) - (v(model, Bn.vCostInvst) + v(model, Bn.vCostProd))
         model.objective = Objective(rule=obj_battery_revenue_rule, sense=maximize)
 
     def _battery_exp_grid_cost(self, model):
         def battery_exp_grid_cost_rule(model):
-            return model.BATTERY_GRID_COST == \
-                sum(model.lmp[t] * model.GtoB[t] for t in model.PERIOD)
+            return v(model, Bn.vCostGrid) == \
+                sum(p(model, Bn.pLMP)[t] * v(model, Bn.vGtoB)[t] for t in s(model, Bn.PERIOD))
         model.battery_exp_grid_cost = Constraint(rule=battery_exp_grid_cost_rule)
 
     def _battery_exp_grid_revenue(self, model):
         def battery_exp_grid_revenue_rule(model):
-            return model.BATTERY_GRID_REVENUE == \
-                sum(model.lmp[t] * model.B_DISCHARGE[t] for t in model.PERIOD)
+            return v(model, Bn.vRevGrid) == \
+                sum(p(model, Bn.pLMP)[t] * v(model, Bn.vDch)[t] for t in s(model, Bn.PERIOD))
         model.battery_exp_grid_revenue = Constraint(rule=battery_exp_grid_revenue_rule)
 
     def _battery_exp_invest_cost(self, model):
         def battery_exp_invest_cost_rule(model):
-            return model.BATTERY_INV_COST == model.battery_cost_power * model.BATTERY_SIZE_POWER \
-                + model.battery_cost_capacity * model.BATTERY_SIZE_CAPACITY
-
+            return v(model, Bn.vCostInvst) == p(model, Bn.pCostPow) * v(model, Bn.vSizePow) \
+                + p(model, Bn.pCostCap) * v(model, Bn.vSizeCap)
         model.battery_exp_invest_cost = Constraint(rule=battery_exp_invest_cost_rule)
 
     def _battery_exp_prod_cost(self, model):
         def battery_exp_prod_cost_rule(model):
-            return model.BATTERY_PROD_COST == model.battery_cost_fix + model.BATTERY_SIZE_POWER + \
-                model.battery_cost_variable * sum(model.B_DISCHARGE[t] for t in model.PERIOD)
-
+            return v(model, Bn.vCostProd) == p(model, Bn.pCostFix) + v(model, Bn.vSizePow) + \
+                p(model, Bn.pCostVar) * sum(v(model, Bn.vDch)[t] for t in s(model, Bn.PERIOD))
         model.battery_exp_prod_cost = Constraint(rule=battery_exp_prod_cost_rule)
 
 
@@ -222,12 +222,12 @@ class BCon:
         self._battery_constraint(model, config_mode)
 
     def _battery_constraint(self, model, config_mode):
-        self._wind_battery_prod(model) if config_mode['info_asset_mode'][0] in ['wind_and_battery',
+        self._wind_battery_prod(model) if config_mode in ['wind_and_battery',
                                                                                 'wind_and_solar_and_battery'] else None
-        self._solar_battery_prod(model) if config_mode['info_asset_mode'][0] in ['solar_and_battery',
+        self._solar_battery_prod(model) if config_mode in ['solar_and_battery',
                                                                                  'wind_and_solar_and_battery'] else None
 
-        self._battery_only_charge(model) if config_mode['info_asset_mode'][0] == 'battery' else None
+        self._battery_only_charge(model) if config_mode == 'battery' else None
         self._battery_discharge_grid(model)
         
         self._battery_discharge_at_poi(model)
@@ -244,7 +244,8 @@ class BCon:
         # self._battery_soc_rte_charge_discharge(model)
         self._battery_soc_limit(model)
 
-        mode_power = config_mode['battery_power_mode'][0]
+        # mode_power = config_mode['battery_power_mode'][0] TODO FIX
+        mode_power = 'fix'
         if 'fix' in mode_power:
             self._battery_power_equal_to(model)
             del model.battery_size_less_than_poi
@@ -255,21 +256,24 @@ class BCon:
             self._battery_power_ub(model)
 
         self._battery_duration(model)
-        mode_dur = config_mode['battery_duration_mode'][0]
+        # mode_dur = config_mode['battery_duration_mode'][0] TODO FIX
+        mode_dur = 'fix'
         if 'fix' in mode_dur:
             self._battery_duration_equal_to(model)
         elif 'range' in mode_dur:
             self._battery_duration_lb(model)
             self._battery_duration_ub(model)
 
-        mode_cycle = config_mode['battery_cycle_mode'][0]
+        # mode_cycle = config_mode['battery_cycle_mode'][0] TODO FIX
+        mode_cycle = 'unrestricted'
         if 'unrestricted' in mode_cycle:
             pass
         elif 'range' in mode_cycle:
             self._battery_cycle_lb(model)
             self._battery_cycle_ub(model)
 
-        mode_dod = config_mode['battery_dod_mode'][0]
+        # mode_dod = config_mode['battery_dod_mode'][0] TODO FIX
+        mode_dod = 'unrestricted'
         if 'unrestricted' in mode_dod:
             pass
         elif 'range' in mode_dod:
@@ -278,156 +282,151 @@ class BCon:
 
         return self
 
-################################# BATTERY AND WIND/SOLAR #########################################
     def _wind_battery_prod(self, model):
         def wind_prod_rule(model, t):
-            return model.WIND_SIZE * model.wind[t] - model.WLoss[t] - model.WtoB[t] == \
-                model.WtoA[t]
+            return v(model, Wn.vSize) * p(model, Wn.pWIND)[t] - v(model, Wn.vWLoss)[t] - v(model, Bn.vWtoB)[t] == \
+                v(model, Wn.vWtoA)[t]
 
-        model.wind_to_asset = Constraint(model.PERIOD, rule=wind_prod_rule)
+        model.wind_to_asset = Constraint(s(model, Wn.PERIOD), rule=wind_prod_rule)
 
     def _solar_battery_prod(self, model):
         def solar_ac_prod_rule(model, t):
-            return model.SOLAR_AC_INV[t] * (1 - model.solar_inv_post_loss) \
-                - model.SLoss_AC[t] - model.StoB[t] == \
-                model.StoA[t]
-        model.solar_to_asset = Constraint(model.PERIOD, rule=solar_ac_prod_rule)
+            return v(model, Sn.vInvAC)[t] * (1 - p(model, Sn.pInvACLoss)) \
+                - v(model, Sn.vLossAC)[t] - v(model, Bn.vStoB)[t] == \
+                v(model, Sn.vStoA)[t]
+        model.solar_to_asset = Constraint(s(model, Sn.PERIOD), rule=solar_ac_prod_rule)
 
-########################## BATTERY ONLY #########################################
     def _battery_discharge_at_poi(self, model):
         def battery_at_poi_rule(model, t):
-            return model.B_DISCHARGE[t] <= model.battery_poi
-        model.battery_charge_at_poi = Constraint(model.PERIOD, rule=battery_at_poi_rule)
+            return v(model, Bn.vDch)[t] <= p(model, Bn.pPOI)
+        model.battery_charge_at_poi = Constraint(s(model, Bn.PERIOD), rule=battery_at_poi_rule)
 
     def _battery_charge_at_poi(self, model):
         def battery_at_poi_rule(model, t):
-            return model.B_CHARGE[t] <= model.battery_poi
-        model.battery_discharge_at_poi = Constraint(model.PERIOD, rule=battery_at_poi_rule)
+            return v(model, Bn.vChg)[t] <= p(model, Bn.pPOI)
+        model.battery_discharge_at_poi = Constraint(s(model, Bn.PERIOD), rule=battery_at_poi_rule)
 
     def _battery_size_less_than_poi(self, model):
         def battery_size_less_than_poi_rule(model):
-            return model.BATTERY_SIZE_POWER <= model.battery_poi
+            return v(model, Bn.vSizePow) <= p(model, Bn.pPOI)
         model.battery_size_less_than_poi = Constraint(rule=battery_size_less_than_poi_rule)
 
     def _battery_power_equal_to(self, model):
         def battery_power_equal_to_rule(model):
-            return model.BATTERY_SIZE_POWER == model.battery_power_fix
+            return v(model, Bn.vSizePow) == p(model, Bn.pPowFix)
         model.battery_power_equal_to = Constraint(rule=battery_power_equal_to_rule)
 
     def _battery_power_lb(self, model):
         def battery_power_lb_rule(model):
-            return model.battery_power_lb_min <= model.BATTERY_SIZE_POWER
+            return p(model, Bn.pPowLB) <= v(model, Bn.vSizePow)
         model.battery_power_lb = Constraint(rule=battery_power_lb_rule)
 
     def _battery_power_ub(self, model):
         def battery_power_ub_rule(model):
-            return model.BATTERY_SIZE_POWER <= model.battery_power_ub_max
+            return v(model, Bn.vSizePow) <= p(model, Bn.pPowUB)
         model.battery_power_ub = Constraint(rule=battery_power_ub_rule)
 
     def _battery_duration(self, model):
         def battery_duration_rule(model):
-            return model.BATTERY_SIZE_POWER <= model.BATTERY_SIZE_CAPACITY
-
+            return v(model, Bn.vSizePow) <= v(model, Bn.vSizeCap)
         model.battery_duration = Constraint(rule=battery_duration_rule)
 
     def _battery_duration_equal_to(self, model):
         def battery_duration_equal_to_rule(model):
-            return model.BATTERY_SIZE_POWER * model.battery_duration_fix == model.BATTERY_SIZE_CAPACITY
+            return v(model, Bn.vSizePow) * p(model, Bn.pDurFix) == v(model, Bn.vSizeCap)
         model.battery_duration_equal_to = Constraint(rule=battery_duration_equal_to_rule)
 
     def _battery_duration_lb(self, model):
         def battery_duration_lb_rule(model):
-            return model.BATTERY_SIZE_CAPACITY >= model.battery_duration_lb_min * model.BATTERY_SIZE_POWER
+            return v(model, Bn.vSizeCap) >= p(model, Bn.pDurLB) * v(model, Bn.vSizePow)
         model.battery_duration_lb = Constraint(rule=battery_duration_lb_rule)
 
     def _battery_duration_ub(self, model):
         def battery_duration_ub_rule(model):
-            return model.BATTERY_SIZE_CAPACITY <= model.battery_duration_ub_max * model.BATTERY_SIZE_POWER
+            return v(model, Bn.vSizeCap) <= p(model, Bn.pDurUB) * v(model, Bn.vSizePow)
         model.battery_duration_ub = Constraint(rule=battery_duration_ub_rule)
 
     def _battery_only_charge(self, model):
         def battery_only_charge_rule(model, t):
-            return model.B_CHARGE[t] == model.GtoB[t]
-        model.battery_only_charge = Constraint(model.PERIOD, rule=battery_only_charge_rule)
-        
+            return v(model, Bn.vChg)[t] == v(model, Bn.vGtoB)[t]
+        model.battery_only_charge = Constraint(s(model, Bn.PERIOD), rule=battery_only_charge_rule)
+
     def _battery_discharge_grid(self, model):
         def battery_discharge_grid_rule(model, t):
-            return model.B_DISCHARGE[t] == model.BtoA[t]
-        model.battery_discharge_grid = Constraint(model.PERIOD, rule=battery_discharge_grid_rule)
-
+            return v(model, Bn.vDch)[t] == v(model, Bn.vBtoA)[t]
+        model.battery_discharge_grid = Constraint(s(model, Bn.PERIOD), rule=battery_discharge_grid_rule)
     def _battery_soc_rte_charge(self, model):
         def battery_soc_rte_charge_rule(model, t):
             if t < 1:
-                return model.B_SOC[t] == model.battery_rte * model.B_CHARGE[t] - model.B_DISCHARGE[t]
+                return v(model, Bn.vSOC)[t] == p(model, Bn.pRTE) * v(model, Bn.vChg)[t] - v(model, Bn.vDch)[t]
             else:
-                return model.B_SOC[t] == \
-                    model.B_SOC[t - 1] + model.battery_rte * model.B_CHARGE[t] - model.B_DISCHARGE[t]
+                return v(model, Bn.vSOC)[t] == \
+                    v(model, Bn.vSOC)[t - 1] + p(model, Bn.pRTE) * v(model, Bn.vChg)[t] - v(model, Bn.vDch)[t]
 
-        model.battery_soc_rte_charge = Constraint(model.PERIOD, rule=battery_soc_rte_charge_rule)
+        model.battery_soc_rte_charge = Constraint(s(model, Bn.PERIOD), rule=battery_soc_rte_charge_rule)
 
     def _battery_soc_rte_charge_discharge(self, model):
         def battery_soc_rte_charge_discharge_rule(model, t):
             if t < 1:
-                return model.B_SOC[t] == \
-                    model.battery_rte_charge * model.B_CHARGE[t] - model.battery_rte_discharge * model.B_DISCHARGE[t]
+                return v(model, Bn.vSOC)[t] == \
+                    p(model, Bn.pRTEChg) * v(model, Bn.vChg)[t] - p(model, Bn.pRTEDch) * v(model, Bn.vDch)[t]
             else:
-                return model.B_SOC[t] == model.B_SOC[t - 1] \
-                    + model.battery_rte_charge * model.B_CHARGE[t] - model.battery_rte_discharge * model.B_DISCHARGE[t]
+                return v(model, Bn.vSOC)[t] == v(model, Bn.vSOC)[t - 1] \
+                    + p(model, Bn.pRTEChg) * v(model, Bn.vChg)[t] - p(model, Bn.pRTEDch) * v(model, Bn.vDch)[t]
 
-        model.battery_soc_rte_charge_discharge = Constraint(model.PERIOD, rule=battery_soc_rte_charge_discharge_rule)
+        model.battery_soc_rte_charge_discharge = Constraint(s(model, Bn.PERIOD), rule=battery_soc_rte_charge_discharge_rule)
 
     def _battery_state_charge(self, model):
         def battery_state_charge_rule(model, t):
-            return model.B_CHARGE[t] <= 1000 * model.B_STATE[t]
+            return v(model, Bn.vChg)[t] <= 1000 * v(model, Bn.vState)[t]
 
-        model.battery_state_charge = Constraint(model.PERIOD, rule=battery_state_charge_rule)
+        model.battery_state_charge = Constraint(s(model, Bn.PERIOD), rule=battery_state_charge_rule)
 
     def _battery_state_discharge(self, model):
         def battery_state_discharge_rule(model, t):
-            return model.B_DISCHARGE[t] <= 1000 * (1 - model.B_STATE[t])
+            return v(model, Bn.vDch)[t] <= 1000 * (1 - v(model, Bn.vState)[t])
 
-        model.battery_state_discharge = Constraint(model.PERIOD, rule=battery_state_discharge_rule)
+        model.battery_state_discharge = Constraint(s(model, Bn.PERIOD), rule=battery_state_discharge_rule)
 
     def _battery_charge_limit(self, model):
         def battery_charge_limit_rule(model, t):
-            return model.B_CHARGE[t] <= model.BATTERY_SIZE_POWER
+            return v(model, Bn.vChg)[t] <= v(model, Bn.vSizePow)
 
-        model.battery_charge_limit = Constraint(model.PERIOD, rule=battery_charge_limit_rule)
+        model.battery_charge_limit = Constraint(s(model, Bn.PERIOD), rule=battery_charge_limit_rule)
 
     def _battery_discharge_limit(self, model):
         def battery_discharge_limit_rule(model, t):
-            return model.B_DISCHARGE[t] <= model.BATTERY_SIZE_POWER
+            return v(model, Bn.vDch)[t] <= v(model, Bn.vSizePow)
 
-        model.battery_discharge_limit = Constraint(model.PERIOD, rule=battery_discharge_limit_rule)
+        model.battery_discharge_limit = Constraint(s(model, Bn.PERIOD), rule=battery_discharge_limit_rule)
 
     def _battery_soc_limit(self, model):
         def battery_soc_limit_rule(model, t):
-            return model.B_SOC[t] <= model.BATTERY_SIZE_CAPACITY
+            return v(model, Bn.vSOC)[t] <= v(model, Bn.vSizeCap)
 
-        model.battery_soc_limit = Constraint(model.PERIOD, rule=battery_soc_limit_rule)
-
+        model.battery_soc_limit = Constraint(s(model, Bn.PERIOD), rule=battery_soc_limit_rule)
     def _battery_dod_lb(self, model):
         def battery_dod_lb_rule(model, t):
-            return model.battery_dod_lb_min * model.BATTERY_SIZE_CAPACITY <= model.B_SOC[t]
+            return p(model, Bn.pDODLB) * v(model, Bn.vSizeCap) <= v(model, Bn.vSOC)[t]
 
-        model.battery_dod_lb = Constraint(model.PERIOD, rule=battery_dod_lb_rule)
+        model.battery_dod_lb = Constraint(s(model, Bn.PERIOD), rule=battery_dod_lb_rule)
 
     def _battery_dod_ub(self, model):
         def battery_dod_ub_rule(model, t):
-            return model.B_SOC[t] <= model.battery_dod_ub_max * model.BATTERY_SIZE_CAPACITY
+            return v(model, Bn.vSOC)[t] <= p(model, Bn.pDODUB) * v(model, Bn.vSizeCap)
 
-        model.battery_dod_ub = Constraint(model.PERIOD, rule=battery_dod_ub_rule)
+        model.battery_dod_ub = Constraint(s(model, Bn.PERIOD), rule=battery_dod_ub_rule)
 
     def _battery_cycle_lb(self, model):
         def battery_cycle_lb_rule(model):
-            return model.battery_cycle_lb_min * model.BATTERY_SIZE_CAPACITY \
-                <= sum(model.B_DISCHARGE[t] for t in model.PERIOD)
+            return p(model, Bn.pCycLB) * v(model, Bn.vSizeCap) \
+                <= sum(v(model, Bn.vDch)[t] for t in s(model, Bn.PERIOD))
 
         model.battery_cycle_lb = Constraint(rule=battery_cycle_lb_rule)
 
     def _battery_cycle_ub(self, model):
         def battery_cycle_ub_rule(model):
-            return sum(model.B_DISCHARGE[t] for t in model.PERIOD) <= \
-                model.battery_cycle_ub_max * model.BATTERY_SIZE_CAPACITY
+            return sum(v(model, Bn.vDch)[t] for t in s(model, Bn.PERIOD)) <= \
+                p(model, Bn.pCycUB) * v(model, Bn.vSizeCap)
 
         model.battery_cycle_ub = Constraint(rule=battery_cycle_ub_rule)

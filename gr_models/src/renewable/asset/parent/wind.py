@@ -1,6 +1,10 @@
 from pyomo.environ import *
 
 
+from gr_models.src.renewable.asset.nomenclature.wind import WindNomenclature as Wn
+from gr_models.src.renewable.asset.utils import *
+
+
 class WSet:
     def __init__(self, model, config_mode):
         # self._wind_set(model, config_mode)
@@ -12,7 +16,7 @@ class WSet:
         return self
 
     def _PERIOD(self, model):
-        model.PERIOD = Set()
+        set(model, Wn.PERIOD)
 
 
 class WPar:
@@ -35,34 +39,34 @@ class WPar:
         return self
 
     def _wind_poi(self, model):
-        model.wind_poi = Param()
+        par(model=model, name=Wn.pPOI, time=None, default=None)
 
     def _wind_cost(self, model):
-        model.wind_cost = Param()
+        par(model, Wn.pCost)
 
     def _wind_cost_inter(self, model):
-        model.wind_cost_inter = Param()
+        par(model, Wn.pCostInter)
 
     def _wind_cost_fix(self, model):
-        model.wind_cost_fix = Param()
+        par(model, Wn.pCostFix)
 
     def _wind_cost_variable(self, model):
-        model.wind_cost_variable = Param()
+        par(model, Wn.pCostVar)
 
     def _wind_size_fix(self, model):
-        model.wind_size_fix = Param()
+        par(model, Wn.pSizeFix)
 
     def _wind_size_lb_min(self, model):
-        model.wind_size_lb_min = Param()
+        par(model, Wn.pSizeLB)
 
     def _wind_size_ub_max(self, model):
-        model.wind_size_ub_max = Param()
+        par(model, Wn.pSizeUB)
 
     def _wind_resource(self, model):
-        model.wind = Param(model.PERIOD)
+        par(model, Wn.pWIND, Wn.PERIOD)
 
     def _wind_lmp(self, model):
-        model.wind_lmp = Param(model.PERIOD)
+        par(model, Wn.pLMP, Wn.PERIOD)
 
 
 class WVar:
@@ -80,22 +84,22 @@ class WVar:
         return self
 
     def _WIND_INV_COST(self, model):
-        model.WIND_INV_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Wn.vCostInvst)
 
     def _WIND_PROD_COST(self, model):
-        model.WIND_PROD_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Wn.vCostProd)
 
     def _WIND_GRID_REVENUE(self, model):
-        model.WIND_GRID_REVENUE = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Wn.vRevGrid)
 
     def _WIND_SIZE(self, model):
-        model.WIND_SIZE = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Wn.vSize)
 
     def _WtoA(self, model):
-        model.WtoA = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Wn.vWtoA, Wn.PERIOD, initialize=0)
 
     def _WLoss(self, model):
-        model.WLoss = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Wn.vWLoss, Wn.PERIOD, initialize=0)
 
 
 class WObj:
@@ -103,7 +107,7 @@ class WObj:
         self._wind_objective(model, config_mode)
 
     def _wind_objective(self, model, config_mode):
-        self._obj_wind_revenue(model) if config_mode['info_asset_mode'][0] == 'wind' else None
+        self._obj_wind_revenue(model) if config_mode == 'wind' else None
         self._wind_exp_grid_revenue(model)
         self._wind_exp_invest_cost(model)
         self._wind_exp_prod_cost(model)
@@ -112,26 +116,23 @@ class WObj:
 
     def _obj_wind_revenue(self, model):
         def obj_wind_revenue_rule(model):
-            return model.WIND_GRID_REVENUE - (model.WIND_INV_COST + model.WIND_PROD_COST)
+            return v(model, Wn.vRevGrid) - (v(model, Wn.vCostInvst) + v(model, Wn.vCostProd))
         model.objective = Objective(rule=obj_wind_revenue_rule, sense=maximize)
 
     def _wind_exp_grid_revenue(self, model):
         def wind_exp_grid_revenue_rule(model):
-            return model.WIND_GRID_REVENUE == sum(model.lmp[t] * model.WtoA[t] for t in model.PERIOD)
-
+            return v(model, Wn.vRevGrid) == sum(p(model, Wn.pLMP)[t] * v(model, Wn.vWtoA)[t] for t in s(model, Wn.PERIOD))
         model.wind_exp_grid_revenue = Constraint(rule=wind_exp_grid_revenue_rule)
 
-    def _wind_exp_invest_cost(self, model):  # add interconnection cost
+    def _wind_exp_invest_cost(self, model):
         def wind_exp_invest_cost_rule(model):
-            return model.WIND_INV_COST == model.wind_cost * model.WIND_SIZE
-
+            return v(model, Wn.vCostInvst) == p(model, Wn.pCost) * v(model, Wn.vSize)
         model.wind_exp_invest_cost = Constraint(rule=wind_exp_invest_cost_rule)
 
     def _wind_exp_prod_cost(self, model):
         def wind_exp_prod_cost_rule(model):
-            return model.WIND_PROD_COST == model.wind_cost_fix * model.WIND_SIZE + \
-                model.wind_cost_variable * sum(model.WtoA[t] for t in model.PERIOD)
-
+            return v(model, Wn.vCostProd) == p(model, Wn.pCostFix) * v(model, Wn.vSize) + \
+                p(model, Wn.pCostVar) * sum(v(model, Wn.vWtoA)[t] for t in s(model, Wn.PERIOD))
         model.wind_exp_prod_cost = Constraint(rule=wind_exp_prod_cost_rule)
 
 
@@ -140,13 +141,13 @@ class WCon:
         self._wind_constraint(model, config_mode)
 
     def _wind_constraint(self, model, config_mode):
-        self._wind_only_prod(model) if config_mode['info_asset_mode'][0] == 'wind' else None
-        self._wind_only_prod(model) if config_mode['info_asset_mode'][0] == 'wind_and_solar' else None
+        self._wind_only_prod(model) if config_mode == 'wind' else None
+        self._wind_only_prod(model) if config_mode == 'wind_and_solar' else None
 
         self._wind_at_poi(model)
         self._wind_size_less_than_poi(model)
 
-        mode = config_mode['wind_size_mode'][0]
+        mode = 'fix'#config_mode['wind_size_mode'][0] TODO FIX
         if 'fix' in mode:
             self._wind_size_equal_to(model)
             del model.wind_size_less_than_poi
@@ -158,36 +159,32 @@ class WCon:
 
     def _wind_only_prod(self, model):
         def wind_prod_rule(model, t):
-            return model.WIND_SIZE * model.wind[t] - model.WLoss[t] == \
-                model.WtoA[t] #TODO add loss * (1 - model.solar_panel_degradation)
-
-        model.wind_to_asset = Constraint(model.PERIOD, rule=wind_prod_rule)
+            return v(model, Wn.vSize) * p(model, Wn.pWIND)[t] - v(model, Wn.vWLoss)[t] == \
+                v(model, Wn.vWtoA)[t]   # TODO add loss * (1 - model.solar_panel_degradation)
+        model.wind_to_asset = Constraint(s(model, Wn.PERIOD), rule=wind_prod_rule)
 
     def _wind_at_poi(self, model):
         def wind_at_poi_rule(model, t):
-            return model.WtoA[t] <= model.wind_poi
-        model.wind_at_poi = Constraint(model.PERIOD, rule=wind_at_poi_rule)
-
+            return v(model, Wn.vWtoA)[t] <= p(model, Wn.pPOI)
+        model.wind_at_poi = Constraint(s(model, Wn.PERIOD), rule=wind_at_poi_rule)
 
     def _wind_size_less_than_poi(self, model):
         def wind_size_less_than_poi_rule(model):
-            return model.WIND_SIZE <= model.wind_poi
+            return v(model, Wn.vSize) <= p(model, Wn.pPOI)
         model.wind_size_less_than_poi = Constraint(rule=wind_size_less_than_poi_rule)
 
     def _wind_size_equal_to(self, model):  ## TODO: que es mas effciente. evaluar el modelo con
         def wind_size_equal_to_rule(model):
-            return model.WIND_SIZE == model.wind_size_fix
-
+            return v(model, Wn.vSize) == p(model, Wn.pSizeFix)
         model.wind_size_equal_to = Constraint(rule=wind_size_equal_to_rule)
 
     def _wind_size_lb(self, model):
         def wind_size_lb_rule(model):
-            return model.wind_size_lb_min <= model.WIND_SIZE
-
+            return p(model, Wn.pSizeLB) <= v(model, Wn.vSize)
         model.wind_size_lb = Constraint(rule=wind_size_lb_rule)
 
     def _wind_size_ub(self, model):
         def wind_size_ub_rule(model):
-            return model.WIND_SIZE <= model.wind_size_ub_max
-
+            return v(model, Wn.vSize) <= p(model, Wn.pSizeUB)
         model.wind_size_ub = Constraint(rule=wind_size_ub_rule)
+

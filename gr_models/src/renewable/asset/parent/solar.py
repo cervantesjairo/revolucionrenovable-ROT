@@ -1,5 +1,8 @@
 from pyomo.environ import *
 
+from gr_models.src.renewable.asset.nomenclature.solar import SolarNomenclature as Sn
+from gr_models.src.renewable.asset.utils import *
+
 
 class SSet:
     def __init__(self, model, config_mode):
@@ -12,7 +15,7 @@ class SSet:
         return self
 
     def _PERIOD(self, model):
-        model.PERIOD = Set()
+        set(model, Sn.PERIOD)
 
 
 class SPar:
@@ -43,66 +46,63 @@ class SPar:
 
         return self
 
-
     def _solar_poi(self, model):
-        model.solar_poi = Param()
+        par(model, Sn.pPOI)
 
     def _solar_cost_inverter(self, model):
-        model.solar_cost_inverter = Param()
+        par(model, Sn.pCostInv)
 
     def _solar_cost_bos(self, model):
-        model.solar_cost_bos = Param()
-
+        par(model, Sn.pCostBos)
     def _solar_cost_panel(self, model):
-        model.solar_cost_panel = Param()
+        par(model, Sn.pCostPnl)
 
     def _solar_cost_fix(self, model):
-        model.solar_cost_fix = Param()
+        par(model, Sn.pCostFix)
 
     def _solar_cost_variable(self, model):
-        model.solar_cost_variable = Param()
+        par(model, Sn.pCostVar)
 
     def _solar_panel_degradation(self, model):
-        model.solar_panel_degradation = Param()
+        par(model, Sn.pPnlDeg)
 
     def _solar_inv_eff(self, model):
-        model.solar_inv_eff = Param()
+        par(model, Sn.pInvEff)
 
     def _solar_inv_pre_loss(self, model):
-        model.solar_inv_pre_loss = Param(default=0)
+        par(model, Sn.pInvDCLoss, default=0)
 
     def _solar_inv_post_loss(self, model):
-        model.solar_inv_post_loss = Param(default=0)
+        par(model, Sn.pInvACLoss, default=0)
 
     def _solar_ratio_fix(self, model):
-        model.solar_ratio_fix = Param()
+        par(model, Sn.pRatFix)
 
     def _solar_ratio_lb_min(self, model):
-        model.solar_ratio_lb_min = Param(default=1)
+        par(model, Sn.pRatLB, default=1)
 
     def _solar_ratio_ub_max(self, model):
-        model.solar_ratio_ub_max = Param(default=1.5)
+        par(model, Sn.pRatUB, default=1.5)
 
     def _solar_size_fix(self, model):
-        model.solar_size_fix = Param()
+        par(model, Sn.pSizeFix)
 
     def _solar_size_lb_min(self, model):
-        model.solar_size_lb_min = Param(default=3)
+        par(model, Sn.pSizeLB, default=3)
 
     def _solar_size_ub_max(self, model):
-        model.solar_size_ub_max = Param(default=10)
+        par(model, Sn.pSizeUB, default=10)
 
     def _solar_resource(self, model):
-        model.solar = Param(model.PERIOD)
+        par(model, Sn.pSOLAR, Sn.PERIOD)
 
     def _solar_lmp(self, model):
-        model.solar_lmp = Param(model.PERIOD)
+        par(model, Sn.pLMP, Sn.PERIOD)
 
 
 class SVar:
     def __init__(self, model, config_mode):
         self._solar_variable(model, config_mode)
-
 
     def _solar_variable(self, model, config_mode):
         self._SOLAR_INV_COST(model)
@@ -120,83 +120,77 @@ class SVar:
         return self
 
     def _SOLAR_INV_COST(self, model):
-        model.SOLAR_INV_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vCostInvst, initialize=0)
 
     def _SOLAR_PROD_COST(self, model):
-        model.SOLAR_PROD_COST = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vCostProd, initialize=0)
 
     def _SOLAR_GRID_REVENUE(self, model):
-        model.SOLAR_GRID_REVENUE = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vRevGrid, initialize=0)
 
     def _SOLAR_AC_SIZE(self, model):
-        model.SOLAR_AC_SIZE = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vSizeAC, initialize=0)
 
     def _SOLAR_DC_SIZE(self, model):
-        model.SOLAR_DC_SIZE = Var(within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vSizeDC, initialize=0)
 
     def _SOLAR_DC_PROD(self, model):
-        model.SOLAR_DC_PROD = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vProdDC, Sn.PERIOD, initialize=0)
 
     def _StoA(self, model):
-        model.StoA = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vStoA, Sn.PERIOD, initialize=0)
 
     def _SLoss_DC(self, model):
-        model.SLoss_DC = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vLossDC, Sn.PERIOD, initialize=0)
 
     def _SLoss_AC(self, model):
-        model.SLoss_AC = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vLossAC, Sn.PERIOD, 0)
 
     def _SOLAR_DC_INV(self, model):
-        model.SOLAR_DC_INV = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vInvDC, Sn.PERIOD, 0)
 
     def _SOLAR_AC_INV(self, model):
-        model.SOLAR_AC_INV = Var(model.PERIOD, within=NonNegativeReals, initialize=0)
+        var_pos(model, Sn.vInvAC, Sn.PERIOD, 0)
 
 
 class SObj:
     def __init__(self, model, config_mode):
         self._solar_objective(model, config_mode)
 
-
     def _solar_objective(self, model, config_mode):
-        self._obj_solar_revenue(model) if config_mode['info_asset_mode'][0] == 'solar' else None
+        self._obj_solar_revenue(model) if config_mode == 'solar' else None
         self._solar_exp_grid_revenue(model)
         self._solar_exp_invest_cost(model)
         self._solar_exp_prod_cost(model)
 
         return self
 
-
     def _obj_solar_revenue(self, model):
         def obj_solar_revenue_rule(model):
-            return model.SOLAR_GRID_REVENUE - (model.SOLAR_INV_COST + model.SOLAR_PROD_COST)
+            return v(model, Sn.vRevGrid) - (v(model, Sn.vCostInvst) + v(model, Sn.vCostProd))
         model.objective = Objective(rule=obj_solar_revenue_rule, sense=maximize)
 
     def _solar_exp_grid_revenue(self, model):
         def solar_exp_grid_revenue_rule(model):
-            return model.SOLAR_GRID_REVENUE == sum(model.lmp[t] * model.StoA[t] for t in model.PERIOD)
-
+            return v(model, Sn.vRevGrid) == sum(p(model, Sn.pLMP)[t] * v(model, Sn.vStoA)[t] for t in s(model, Sn.PERIOD))
         model.solar_exp_grid_revenue = Constraint(rule=solar_exp_grid_revenue_rule)
 
     def _solar_exp_invest_cost(self, model):
         def solar_exp_invest_cost_rule(model):
-            return model.SOLAR_INV_COST == model.solar_cost_inverter * model.SOLAR_AC_SIZE + \
-                (model.solar_cost_bos + model.solar_cost_panel) * model.SOLAR_DC_SIZE
-
+            return v(model, Sn.vCostInvst) == p(model, Sn.pCostInv) * v(model, Sn.vSizeAC) + \
+                (p(model, Sn.pCostBos) + p(model, Sn.pCostPnl)) * v(model, Sn.vSizeDC)
         model.solar_exp_invest_cost = Constraint(rule=solar_exp_invest_cost_rule)
 
     def _solar_exp_prod_cost(self, model):
         def solar_exp_prod_cost_rule(model):
-            return model.SOLAR_PROD_COST == model.solar_cost_fix * model.SOLAR_AC_SIZE + \
-                model.solar_cost_variable * sum(model.StoA[t] for t in model.PERIOD)
-
+            return v(model, Sn.vCostProd) == p(model, Sn.pCostFix) * v(model, Sn.vSizeAC) + \
+                p(model, Sn.pCostVar) * sum(v(model, Sn.vStoA)[t] for t in s(model, Sn.PERIOD))
         model.solar_exp_prod_cost = Constraint(rule=solar_exp_prod_cost_rule)
 
 
 class SCon:
     def __init__(self, model, config_mode):
         self._solar_constraint(model, config_mode)
-
 
     def _solar_constraint(self, model, config_mode):
         self._solar_at_poi(model)
@@ -208,10 +202,10 @@ class SCon:
         self._solar_dc_inv_prod(model)
         self._solar_ac_inv_prod(model)
         self._solar_ac_inv_limit(model)
-        self._solar_only_prod(model) if config_mode['info_asset_mode'][0] == 'solar' else None
-        self._solar_only_prod(model) if config_mode['info_asset_mode'][0] == 'wind_and_solar' else None
+        self._solar_only_prod(model) if config_mode == 'solar' else None
+        self._solar_only_prod(model) if config_mode == 'wind_and_solar' else None
 
-        mode_inv = config_mode['solar_inverter_mode'][0]
+        mode_inv = 'fix'#config_mode['solar_inverter_mode'][0] TODO: fix this
         if 'fix' in mode_inv:
             self._solar_ac_inv_size_equal_to(model)
             del model.solar_size_less_than_poi
@@ -219,7 +213,7 @@ class SCon:
             self._solar_ac_size_lb(model)
             self._solar_ac_size_ub(model)
 
-        mode_ratio = config_mode['solar_ratio_mode'][0]
+        mode_ratio = 'fix'#config_mode['solar_ratio_mode'][0] TODO: fix this
         if 'fix' in mode_ratio:
             self._solar_ratio_equal_to(model)
         elif 'range' in mode_ratio:
@@ -227,88 +221,77 @@ class SCon:
             self._solar_ratio_ub(model)
 
         return self
+
     def _solar_only_prod(self, model):
         def solar_ac_prod_rule(model, t):
-            return model.SOLAR_AC_INV[t] * (1 - model.solar_inv_post_loss) \
-                - model.SLoss_AC[t] == \
-                model.StoA[t]
-        model.solar_to_asset = Constraint(model.PERIOD, rule=solar_ac_prod_rule)
-
+            return v(model, Sn.vInvAC)[t] * (1 - p(model, Sn.pInvACLoss)) \
+                - v(model, Sn.vLossAC)[t] == \
+                v(model, Sn.vStoA)[t]
+        model.solar_to_asset = Constraint(s(model, Sn.PERIOD), rule=solar_ac_prod_rule)
 
     def _solar_at_poi(self, model):
         def solar_at_poi_rule(model, t):
-            return model.StoA[t] <= model.solar_poi
-        model.solar_at_poi = Constraint(model.PERIOD, rule=solar_at_poi_rule)
+            return v(model, Sn.vStoA)[t] <= p(model, Sn.pPOI)#model.solar_poi
+        model.solar_at_poi = Constraint(s(model, Sn.PERIOD), rule=solar_at_poi_rule)
 
     def _solar_size_less_than_poi(self, model):
         def solar_size_less_than_poi_rule(model):
-            return model.SOLAR_AC_SIZE <= model.solar_poi
+            return v(model, Sn.vSizeAC) <= p(model, Sn.pPOI)
         model.solar_size_less_than_poi = Constraint(rule=solar_size_less_than_poi_rule)
 
     def _solar_dc_prod(self, model):
         def solar_dc_prod_rule(model, t):
-            return model.SOLAR_DC_PROD[t] == \
-                model.SOLAR_DC_SIZE * model.solar[t] * (1 - model.solar_panel_degradation)
-
-        model.solar_dc_prod = Constraint(model.PERIOD, rule=solar_dc_prod_rule)
+            return v(model, Sn.vProdDC)[t] == \
+                v(model, Sn.vSizeDC) * p(model, Sn.pSOLAR)[t] * (1 - p(model, Sn.pPnlDeg))
+        model.solar_dc_prod = Constraint(s(model, Sn.PERIOD), rule=solar_dc_prod_rule)
 
     def _solar_dc_inv_prod(self, model):
         def solar_dc_inv_prod_rule(model, t):
-            return model.SOLAR_DC_PROD[t] * (1 - model.solar_inv_pre_loss) - model.SLoss_DC[t] == \
-                model.SOLAR_DC_INV[t]
-
-        model.solar_dc_inv_prod = Constraint(model.PERIOD, rule=solar_dc_inv_prod_rule)
+            return v(model, Sn.vProdDC)[t] * (1 - p(model, Sn.pInvDCLoss)) - v(model, Sn.vLossDC)[t] == \
+                v(model, Sn.vInvDC)[t]
+        model.solar_dc_inv_prod = Constraint(s(model, Sn.PERIOD), rule=solar_dc_inv_prod_rule)
 
     def _solar_ac_inv_prod(self, model):
         def solar_ac_inv_prod_rule(model, t):
-            return model.SOLAR_DC_INV[t] * model.solar_inv_eff == model.SOLAR_AC_INV[t]
-
-        model.solar_ac_inv_prod = Constraint(model.PERIOD, rule=solar_ac_inv_prod_rule)
-
+            return v(model, Sn.vInvDC)[t] * p(model, Sn.pInvEff) == v(model, Sn.vInvAC)[t]
+        model.solar_ac_inv_prod = Constraint(s(model, Sn.PERIOD), rule=solar_ac_inv_prod_rule)
 
     def _solar_ac_inv_limit(self, model):
         def solar_ac_inv_limit_rule(model, t):
-            return model.SOLAR_AC_INV[t] <= model.SOLAR_AC_SIZE
-
-        model.solar_ac_inv_limit = Constraint(model.PERIOD, rule=solar_ac_inv_limit_rule)
+            return v(model, Sn.vInvAC)[t] <= v(model, Sn.vSizeAC)
+        model.solar_ac_inv_limit = Constraint(s(model, Sn.PERIOD), rule=solar_ac_inv_limit_rule)
 
     def _solar_ac_inv_size_equal_to(self, model):  ## TODO: que es mas effciente. evaluar el modelo con
         def solar_ac_inv_size_equal_to_rule(model):
-            return model.SOLAR_AC_SIZE == model.solar_size_fix
-
+            return v(model, Sn.vSizeAC) == p(model, Sn.pSizeFix)
         model.solar_ac_inv_size_equal_to = Constraint(rule=solar_ac_inv_size_equal_to_rule)
 
     def _solar_ac_size_lb(self, model):
         def solar_ac_size_lb_rule(model):
-            return model.solar_size_lb_min <= model.SOLAR_AC_SIZE
-
+            return p(model, Sn.pSizeLB) <= v(model, Sn.vSizeAC)
         model.solar_ac_size_lb = Constraint(rule=solar_ac_size_lb_rule)
 
     def _solar_ac_size_ub(self, model):
         def solar_ac_size_ub_rule(model):
-            return model.SOLAR_AC_SIZE <= model.solar_size_ub_max
-
+            return v(model, Sn.vSizeAC) <= p(model, Sn.pSizeUB)
         model.solar_ac_size_ub = Constraint(rule=solar_ac_size_ub_rule)
 
     def _solar_ratio(self, model):
         def solar_ratio_rule(model):
-            return model.SOLAR_DC_SIZE >= model.SOLAR_AC_SIZE
-
+            return v(model, Sn.vSizeDC) >= v(model, Sn.vSizeAC)
         model.solar_ratio = Constraint(rule=solar_ratio_rule)
 
     def _solar_ratio_equal_to(self, model):
         def solar_ratio_equal_to_rule(model):
-            return model.SOLAR_DC_SIZE == model.SOLAR_AC_SIZE * model.solar_ratio_fix
-
+            return v(model, Sn.vSizeDC) == v(model, Sn.vSizeAC) * p(model, Sn.pRatFix)
         model.solar_ratio_equal_to = Constraint(rule=solar_ratio_equal_to_rule)
 
     def _solar_ratio_lb(self, model):
         def solar_ratio_lb_rule(model):
-            return model.SOLAR_DC_SIZE >= model.solar_ratio_lb_min * model.SOLAR_AC_SIZE
-
+            return v(model, Sn.vSizeDC) >= p(model, Sn.pRatLB) * v(model, Sn.vSizeAC)
         model.solar_ratio_range_lb = Constraint(rule=solar_ratio_lb_rule)
 
     def _solar_ratio_ub(self, model):
         def solar_ratio_ub_rule(model):
-            return model.SOLAR_DC_SIZE <= model.solar_ratio_ub_max * model.SOLAR_AC_SIZE
+            return v(model, Sn.vSizeDC) <= p(model, Sn.pRatUB) * v(model, Sn.vSizeAC)
         model.solar_ratio_range_ub = Constraint(rule=solar_ratio_ub_rule)

@@ -1,11 +1,11 @@
-from common.economics.cost_recovery import CRF
-from common.database.caiso.price.query import CAISO_PRICE
-from common.database.caiso.demand.query import CAISO_DEMAND
-from common.database.nrel.resource.query import NREL_RESOURCE
-from common.database.nrel.wind.query import NREL_WIND
-from common.database.nrel.solar.query import NREL_SOLAR
-
-from common.timeseries.datetime import get_timeseries_latlon
+# from common.economics.cost_recovery import CRF
+# from common.database.caiso.price.query import CAISO_PRICE
+# from common.database.caiso.demand.query import CAISO_DEMAND
+# from common.database.nrel.resource.query import NREL_RESOURCE
+# from common.database.nrel.wind.query import NREL_WIND
+# from common.database.nrel.solar.query import NREL_SOLAR
+#
+# from common.timeseries.datetime import get_timeseries_latlon
 
 import pandas as pd
 import numpy as np
@@ -21,9 +21,9 @@ class Parametrize:
         df_par = self.df_ui_input.select_dtypes(exclude='object')
         df_mode = self.df_ui_input.select_dtypes(include='object')
         df_timeseries = None
-        df_timeseries = self.get_timeseries_data(df_par=df_par,
-                                                 df_mode=df_mode,
-                                                 df_ts=self.df_ui_timeseries)
+        # df_timeseries = self.get_timeseries_data(df_par=df_par,
+        #                                          df_mode=df_mode,
+        #                                          df_ts=self.df_ui_timeseries)
 
         asset_poi = df_par.filter(items=['info_asset_poi'])
         asset_config = df_mode.filter(items=['info_asset_mode'])

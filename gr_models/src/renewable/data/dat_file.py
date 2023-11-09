@@ -2,6 +2,7 @@
 import pandas as pd
 import numpy as np
 
+
 class DatFile:
     def __init__(self, df_timeseries, df_par, df_other):
         self.df_timeseries = df_timeseries

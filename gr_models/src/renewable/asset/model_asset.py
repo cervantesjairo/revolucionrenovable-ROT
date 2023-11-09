@@ -1,33 +1,23 @@
 from pyomo.environ import *
 
-from gr_models.src.asset.model_structure import Sets, Pars, Vars, Objs, Cons
+from gr_models.src.renewable.asset.model_structure import Sets, Pars, Vars, Objs, Cons
 
 
-class AssetModel:
-    def __init__(self, config_mode):
-        self.model = AbstractModel()
-        self.model.dual = Suffix(direction=Suffix.IMPORT_EXPORT)
-
-        self._asset = config_mode['info_asset_mode'][0]
-
-        MySets(self.model, config_mode)
-        MyParams(self.model, config_mode)
-        MyVars(self.model, config_mode)
-        MyObjective(self.model, config_mode)
-        MyConstraints(self.model, config_mode)
-
-
-class MySets(Sets):
-    def __init__(self, model, config_mode):
+class ModelSets(Sets):
+    def __init__(self,
+                 model=None,
+                 asset=None):
         self._PERIOD(model)
 
     def _PERIOD(self, model):
         model.PERIOD = Set()
 
 
-class MyParams(Pars):
-    def __init__(self, model, config_mode):
-        super().__init__(model, config_mode)
+class ModelParams(Pars):
+    def __init__(self,
+                 model=None,
+                 asset=None):
+        super().__init__(model, asset)
 
         self._asset_poi(model)
         self._lmp(model)
@@ -39,21 +29,28 @@ class MyParams(Pars):
         model.lmp = Param(model.PERIOD)
 
 
-class MyVars(Vars):
-    def __init__(self, model, config_mode):
-        super().__init__(model, config_mode)
+class ModelVars(Vars):
+    def __init__(self,
+                 model=None,
+                 asset=None):
+        super().__init__(model, asset)
 
 
-class MyObjective(Objs):
-    def __init__(self, model, config_mode):
-        super().__init__(model, config_mode)
+class ModelObjective(Objs):
+    def __init__(self,
+                 model=None,
+                 asset=None):
+        super().__init__(model, asset)
 
 
-class MyConstraints(Cons):
-    def __init__(self, model, config_mode):
-        super().__init__(model, config_mode)
+class ModelConstraints(Cons):
+    def __init__(self,
+                 model=None,
+                 asset=None):
+        super().__init__(model, asset)
 
-        _asset = config_mode['info_asset_mode'][0]
+        _asset = asset
+        # _asset = config_mode['info_asset_mode'][0]
         if _asset == 'wind':
             self._wind_asset_poi_limit(model)
 
