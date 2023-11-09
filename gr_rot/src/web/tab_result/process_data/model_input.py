@@ -83,12 +83,34 @@ class Parametrize:
             # load
             # price
 
-        # model data format --> object --> method return df with model data static and dynamic parameters
+        # model data format --> object --> method return df with model data "static" and "dynamic" parameters
             # timeseries
             # asset
 
         # model solver --> object --> method return df with model results
-            # model data format
+            # static
+            # dynamic
+
+
+        ## Model
+        # DatFile --> object --> method return the dat file that parametrizes the model
+            # static
+            # dynamic
+
+        # ModelSolution --> object --> method return an instance. This instance is the model solution
+            # asset
+
+        # Get df output --> object --> method return df with model results (dynamic and stactic
+            # instance
+
+
+
+
+
+
+
+
+
 
 
         # x, y = ModelDataFormat(timeseries=timeseries,
