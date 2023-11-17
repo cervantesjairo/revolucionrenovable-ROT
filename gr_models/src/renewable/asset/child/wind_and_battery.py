@@ -17,35 +17,35 @@ from gr_models.src.renewable.asset.utils import *
 # from model.asset.utils import *
 
 class WBset(WSet, BSet):
-    def __init__(self, model, config_mode):
+    def __init__(self, model, asset):
         pass
 
 
 class WBpar(WPar, BPar):
-    def __init__(self, model, config_mode):
-        self._wind_battery_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_battery_parameter(model, asset)
 
-    def _wind_battery_parameter(self, model, config_mode):
-        self._wind_parameter(model, config_mode)
-        self._battery_parameter(model, config_mode)
+    def _wind_battery_parameter(self, model, asset):
+        self._wind_parameter(model, asset)
+        self._battery_parameter(model, asset)
 
 
 class WBvar(WVar, BVar):
-    def __init__(self, model, config_mode):
-        self._wind_battery_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_battery_variable(model, asset)
 
-    def _wind_battery_variable(self, model, config_mode):
-        self._wind_variable(model, config_mode)
-        self._battery_variable(model, config_mode)
+    def _wind_battery_variable(self, model, asset):
+        self._wind_variable(model, asset)
+        self._battery_variable(model, asset)
 
 
 class WBobj(WObj, BObj):
-    def __init__(self, model, config_mode):
-        self._wind_battery_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_battery_objective(model, asset)
 
-    def _wind_battery_objective(self, model, config_mode):
-        self._wind_objective(model, config_mode)
-        self._battery_objective(model, config_mode)
+    def _wind_battery_objective(self, model, asset):
+        self._wind_objective(model, asset)
+        self._battery_objective(model, asset)
         self._obj_wind_battery_revenue(model)
 
     # def _obj_wind_battery_revenue(self, model):
@@ -62,12 +62,12 @@ class WBobj(WObj, BObj):
 
 
 class WBcon(WCon, BCon):
-    def __init__(self, model, config_mode):
-        self._wind_battery_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_battery_constraint(model, asset)
 
-    def _wind_battery_constraint(self, model, config_mode):
-        self._wind_constraint(model, config_mode)
-        self._battery_constraint(model, config_mode)
+    def _wind_battery_constraint(self, model, asset):
+        self._wind_constraint(model, asset)
+        self._battery_constraint(model, asset)
 
         # self._wind_battery_charge_exp1(model)         # only grid charge
         # self._wind_battery_charge_exp2(model)         # only wind charge

@@ -1,7 +1,7 @@
 class Price:
     def __init__(self,
-                 demand_id: str = None,
-                 demand_factor: float = None,
+                 price_market_id: str = None,
+                 price_node_id: str = None,
                  ):
-        self.demand_id = demand_id
-        self.demand_factor = demand_factor
+        self.price_market_id = price_market_id
+        self.price_node_id = price_node_id

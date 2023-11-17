@@ -2,7 +2,7 @@ from gr_comun.src.messages.base import Message
 import pandas as pd
 
 
-class SolarMSG(Message):
+class BatteryMSG(Message):
     # WS = 'wind_speed'
     GHI = 'ghi'
     DHI = 'dhi'
@@ -23,6 +23,6 @@ class SolarMSG(Message):
         self.df = pd.DataFrame()
 
     def append_wind_speed(self, value):
-        self.df[SolarMSG.SP] = value
+        self.df[BatteryMSG.SP] = value
         return self
 

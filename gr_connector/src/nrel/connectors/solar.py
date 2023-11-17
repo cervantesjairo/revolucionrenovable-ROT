@@ -1,34 +1,27 @@
 from gr_connector.src.nrel.database.resource.query import NREL_RESOURCE
 from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
 from gr_comun.src.renewable.solar.solarpark import SolarPark
-# from gr_comun.src.renewable.solar.
+from gr_comun.src.timeseries.object.simulation import Simulation
 
-
-class Solar:
+class SolarResource:
     """
     This object is a
     """
     def __init__(self,
-                 ts_from=None,
-                 ts_to=None,
-                 lon=None,
-                 lat=None,
+                 simulation: Simulation = None,
                  solar_park: SolarPark = None):
-        self.start = ts_from
-        self.end = ts_to
-        self.lon = lon
-        self.lat = lat
+        self.simulation = simulation
         self.solar_park = solar_park
         self.var = 'ghi'
 
     def get_solar_cap_factor(self):
 
-        resource = (NREL_RESOURCE(ts_from=self.start,
-                                  ts_to=self.end
+        resource = (NREL_RESOURCE(ts_from=self.simulation.ts_from,
+                                  ts_to=self.simulation.ts_to,
                                   )
                     .get_resource(var=self.var,
-                                  lat=self.lat,
-                                  lon=self.lon
+                                  lat=self.simulation.lat,
+                                  lon=self.simulation.lon,
                                   )
                     )
 

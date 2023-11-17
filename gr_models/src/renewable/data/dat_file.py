@@ -1,53 +1,42 @@
-# from model.model_data import DataModel
-import pandas as pd
-import numpy as np
+from gr_comun.src.messages.base import TimeSeriesMessage as TSm
+from gr_comun.src.timeseries.ts_rot import TimeSeriesROT
+from gr_comun.src.timeseries.is_rot import InvariantSeries
 
 
 class DatFile:
-    def __init__(self, df_timeseries, df_par, df_other):
-        self.df_timeseries = df_timeseries
-        self.df_par = df_par
-        self.df_mode = df_other
+    def __init__(self,
+                 time_series: TimeSeriesROT = None,
+                 constant_values: InvariantSeries = None,):
+        self.time_series = time_series
+        self.constant_values = constant_values
 
     def generate_dat_file(self):
+        cv = round(self.constant_values, 4)
+        ts = round(self.time_series, 4)
+        col_drop = [TSm.DT_UTC, TSm.DT_FROM, TSm.DT_TO]
+        ts = ts.drop(columns=col_drop)
+        ts = ts.reset_index()
 
-        _asset = self.df_mode['info_asset_mode'][0]
-        df_par = round(self.df_par, 4)
-        df_timeseries = round(self.df_timeseries, 4)
-        df_timeseries = df_timeseries.reset_index()                   ### TODO: Thre should be one for each solar
-        model_file = r'C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data.dat'
-        # C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data.dat
+        model_file = r'C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data.dat'
+
         with open(model_file, 'w') as file:
-            for i in df_par.columns:
-                file.write(f'param {i} :=\n')
-                file.write(f'{df_par[i][0]}\n')
+            for i in cv.columns:
+                file.write(f"param {i} :=\n")
+                file.write(f"{cv[i][0]}\n")
                 file.write(';\n')
                 file.write('\n')
             file.write('\n')
 
             file.write(f'set PERIOD :=\n')
-            for i in df_timeseries['index']:
+            for i in ts['index']:
                 file.write(f'{i} \n')
             file.write(';\n')
             file.write('\n')
 
-            file.write(f'param lmp :=\n')
-            for j in df_timeseries['index']:
-                file.write(f'{df_timeseries["index"][j]} {df_timeseries["lmp"][j]}\n')
-            file.write(';\n')
-            file.write('\n')
-
-            if 'solar' in _asset:
-                file.write(f'param solar :=\n')
-                for j in df_timeseries['index']:
-                    file.write(f'{df_timeseries["index"][j]} {df_timeseries["solar"][j]}\n')
-                file.write(';\n')
-                file.write('\n')
-
-            if 'wind' in _asset:
-                file.write(f'param wind :=\n')
-                for j in df_timeseries['index']:
-                    file.write(f'{df_timeseries["index"][j]} {df_timeseries["wind"][j]}\n')
+            for i in ts.columns.drop('index'):
+                file.write(f'param {i} :=\n')
+                for j in ts['index']:
+                    file.write(f'{ts["index"][j]} {ts[i][j]}\n')
                 file.write(';\n')
                 file.write('\n')
 

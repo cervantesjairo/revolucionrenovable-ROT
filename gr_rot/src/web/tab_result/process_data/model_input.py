@@ -1,37 +1,40 @@
-# from muiscaenergy_common.src.eng_economy.cashflow import CashFlowMeasures
-from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
-from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
+import pandas as pd
 
-from gr_connector.src.nrel.connectors.wind import Wind
-from gr_connector.src.nrel.connectors.solar import Solar
-
-from gr_comun.src.timeseries.simulation import Simulation
-from gr_comun.src.renewable.wind.windfarm import WindFarm
-from gr_comun.src.renewable.solar.solarpark import SolarPark
-from gr_comun.src.renewable.storage.batterystorage import BES
-from gr_comun.src.renewable.asset.ren_asset import RenewableAsset
+from gr_comun.src.timeseries.object.simulation import Simulation
+from gr_comun.src.timeseries.object.project import ProjectRenewable
+from gr_comun.src.eng_economy.cashflow import CashFlowMeasures
 
 from gr_comun.src.renewable.wind.object.elements import WindTurbine, WindCost, WindMode
+from gr_comun.src.renewable.wind.windfarm import WindFarm
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
 from gr_comun.src.renewable.solar.object.elements import PanelInv, SolarCost, SolarMode
+from gr_comun.src.renewable.solar.solarpark import SolarPark
+from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
 from gr_comun.src.renewable.storage.object.elements import Battery, BatteryCost, BatteryMode
+from gr_comun.src.renewable.storage.object.msg import BatteryMSG as Bmsg
+from gr_comun.src.renewable.storage.battery import BES
 
-from gr_rot.src.web.tab_result.process_data.data_type import DataFormat
-from datetime import datetime
-# from muiscaenergy_connector.src.nrel.database.wind.query import NREL_WIND
-# from muiscaenergy_connector.src.nrel.database.solar.query import NREL_SOLAR
-# from muiscaenergy_connector.src.caiso.database.price.query import CAISO_PRICES
-# from muiscaenergy_connector.src.caiso.database.demand.query import CAISO_DEMANDS
-#
-#
-# from common.economics.cost_recovery import CRF
-# from common.database.caiso.price.query import CAISO_PRICE
-# from common.database.caiso.demand.query import CAISO_DEMAND
-# from common.database.nrel.resource.query import NREL_RESOURCE
-# from common.database.nrel.wind.query import NREL_WIND
-# from common.database.nrel.solar.query import NREL_SOLAR
-#
-# from common.timeseries.datetime import get_timeseries_latlon
+from gr_comun.src.load.object.load import Load
+from gr_comun.src.price.object.price import Price
 
+from gr_comun.src.timeseries.base import get_timeseries
+from gr_connector.src.nrel.connectors.wind import WindResource
+from gr_connector.src.nrel.connectors.solar import SolarResource
+from gr_connector.src.caiso.connectors.lmp import LMP
+from gr_connector.src.caiso.connectors.load import LOAD
+from gr_comun.src.messages.base import TimeSeriesMessage as TSm
+from gr_comun.src.timeseries.ts_rot import TimeSeriesROT
+
+from gr_comun.src.renewable.asset.ren_asset import RenewableAsset
+
+from gr_models.src.renewable.asset.nomenclature.wind import WindNomenclature as Wn
+from gr_models.src.renewable.asset.nomenclature.solar import SolarNomenclature as Sn
+from gr_models.src.renewable.asset.nomenclature.battery import BatteryNomenclature as Bn
+
+from gr_comun.src.timeseries.is_rot import InvariantSeries
+from gr_models.src.renewable.data.dat_file import DatFile
+from gr_models.src.renewable.solve import ModelSolution
+from gr_models.src.renewable.result import ResultOptimization
 
 class Parametrize:
 
@@ -44,8 +47,165 @@ class Parametrize:
         df_par = self.df_ui_input.select_dtypes(exclude='object')
         df_mode = self.df_ui_input.select_dtypes(include='object')
 
-        x=1
-        # proyect --> object
+        sim = Simulation(ts_from=self.df_ui_timeseries['date_start'][0],
+                         ts_to=self.df_ui_timeseries['date_end'][0],
+                         lat=self.df_ui_timeseries['lat'][0],
+                         lon=self.df_ui_timeseries['lon'][0],
+                         tz=None,
+                         freq='H'
+                         )
+
+        cashflow = CashFlowMeasures(eco_lifetime=self.df_ui_input['planning_horizon'][0],
+                                interest_rate=self.df_ui_input['interest_rate'][0],
+                                compounding='Y'
+                                )
+
+        project = ProjectRenewable(name='project',
+                                   config='wind_solar_battery',
+                                   simulation=None,
+                                   financial=None,
+                                   )
+        #
+        wind_farm = WindFarm(
+            poi=100,
+            loss=0,
+            turbine=WindTurbine(
+                rated_power=df_par[Wmsg.WT_RP][0],
+                v_rated=df_par[Wmsg.WT_VR][0],
+                v_cut_in=df_par[Wmsg.WT_VI][0],
+                v_cut_out=df_par[Wmsg.WT_VO][0],
+                hub_height=df_par[Wmsg.WT_HH][0],
+                rotor_diameter=df_par[Wmsg.WT_RD][0],
+            ),
+            cost=WindCost(
+                capex_wind=10,
+                capex_inter=20,
+                opex_fix=30,
+                opex_variable=40,
+            ),
+            mode=WindMode(
+                size_conf='fix',  ##fix, range, optimize
+                size_fix=10,
+                size_lb_min=20,
+                size_ub_max=30,
+            ),
+        )
+
+        solar_park = SolarPark(
+            poi=100,
+            loss=None,
+            panel_inv=PanelInv(
+                panel_power_nominal=535,
+                panel_area=df_par[Smsg.P_AREA][0],
+                panel_eff=df_par[Smsg.P_EFF][0],
+                panel_deg=df_par[Smsg.P_DEG][0],
+                inv_eff=df_par[Smsg.I_EFF][0],
+                inv_dc_loss=df_par[Smsg.I_DC_LOSS][0],
+                inv_ac_loss=df_par[Smsg.I_AC_LOSS][0],
+            ),
+            cost=SolarCost(
+                capex_panel=10,
+                capex_bos=20,
+                capex_inv=30,
+                opex_var=40,
+                opex_fix=50,
+            ),
+            mode=SolarMode(
+                inv_conf='fix',
+                inv_fix=10,
+                inv_lb_min=20,
+                inv_ub_max=30,
+                ratio_conf='fix',
+                ratio_fix=10,
+                ratio_lb_min=20,
+                ratio_ub_max=30,
+            ),
+
+        )
+        bes = BES(
+            poi=100,
+            loss=None,
+            battery=Battery(
+                rte=90),
+            cost=BatteryCost(
+                capex_power=10,
+                capex_capacity=20,
+                opex_fix=30,
+                opex_var=40,
+            ),
+            mode=BatteryMode(
+                power_conf='fix',
+                power_fix=10,
+                power_lb_min=20,
+                power_ub_max=30,
+                dur_conf='fix',
+                dur_fix=10,
+                dur_lb_min=20,
+                dur_ub_max=30,
+                dod_conf='unrestricted',
+                dod_fix=10,
+                dod_lb_min=20,
+                dod_ub_max=30,
+                cycle_conf='range',
+                cycle_fix=10,
+                cycle_lb_min=0,
+                cycle_ub_max=30,
+            ),
+        )
+
+
+
+        load_caiso = Load(
+            demand_id='ACTUAL',
+            demand_factor=1,
+            area='CA ISO-TAC',
+        )
+
+        price_caiso = Price(
+            price_market_id='DAM',
+            price_node_id='TH_NP15_GEN-APND' #df_mode['iso_price_dropdown_var'][0],
+        )
+
+        timeseries = TimeSeriesROT(
+            simulation=sim,
+            wind=wind_farm,
+            solar=solar_park,
+            storage=bes,
+            load=load_caiso,
+            price=price_caiso,
+        )
+
+        x = timeseries.get_timeseries_data()
+
+        asset = RenewableAsset(name='project',
+                               config='wind_solar_battery',
+                               poi=100,
+                               loss=None,
+                               mode=None,
+                               wind=wind_farm,
+                               solar=solar_park,
+                               storage=bes,)
+
+        # invariant_series = InvariantSeries(asset=asset,
+        #                                    financial=cashflow,)
+        #
+        # y = invariant_series.get_invariant_series()
+        #
+        # file = DatFile(time_series=x,
+        #                constant_values=y).generate_dat_file()
+
+        solution = ModelSolution(asset=asset,).solve()
+
+        results = ResultOptimization(instance=solution,
+                                     asset=asset,
+                                     timeseries=x,
+                                     ).get_result_df()
+
+        return results
+
+
+#
+#         # proyect --> object
             # name
             # config = solar+wind+battery
             # financial = cash flow
@@ -69,13 +229,6 @@ class Parametrize:
             # price_market_id
             # price_node_id
 
-        # simulation --> object
-            # ts_from
-            # ts_to
-            # lat
-            # lon
-            # tz
-            # freq
 
         # timeseries --> object --> method return df with timeseries data (wind, solar, price, demand)
             # simulation
@@ -83,89 +236,19 @@ class Parametrize:
             # load
             # price
 
-        # model data format --> object --> method return df with model data "static" and "dynamic" parameters
-            # timeseries
-            # asset
-
-        # model solver --> object --> method return df with model results
-            # static
-            # dynamic
-
 
         ## Model
         # DatFile --> object --> method return the dat file that parametrizes the model
-            # static
-            # dynamic
+        #     timeseries
+        #     asset
 
         # ModelSolution --> object --> method return an instance. This instance is the model solution
-            # asset
+        #     asset mode
 
         # Get df output --> object --> method return df with model results (dynamic and stactic
             # instance
 
 
-
-
-
-
-
-
-
-
-
-        # x, y = ModelDataFormat(timeseries=timeseries,
-        #                        asset=asset
-        #                   ).get_data_type()
-
-# class TimeSeriesROT:
-#     def __init__(self,
-#                  simulation: Simulation = None,
-#                  asset: RenewableAsset = None,
-#                  load=None,
-#                  price=None,
-#                  ):
-#         self.simulation = simulation
-#         self.load = load
-#         self.price = price
-#         self.asset = asset
-#
-#
-#     def get_timeseries_data(self):
-#
-#         wind = Wind(simulacion=self.simulation,
-#                     wind_farm=asset
-#                     )
-#         df_wind = wind.get_wind_cap_factor()
-#
-#         solar = Solar(simulacion=self.simulation,
-#                       solar_park=asset
-#                       )
-#         df_solar = solar.get_solar_cap_factor()
-#
-
-        # PRICE TIMESERIES
-        # price_market_id = 'DAM'
-        # price_node_id = df_mode['iso_price_dropdown_var'][0]
-        # price = LMP(ts_from=self.df_ui_timeseries['date_start'][0],
-        #             ts_to=self.df_ui_timeseries['date_end'][0],
-        #             )
-        # if price_market_id == 'DAM':
-        #     lmp = price.get_lmp_da(node=price_node_id[0])
-        #
-        # if price_market_id == 'RTPD':
-        #     lmp = price.get_lmp_rtpd(node=price_node_id[0])
-        #
-        # if price_market_id == 'RTM':
-        #     lmp = price.get_lmp_rtm(node=price_node_id[0])
-
-        # DEMAND TIMESERIES
-        # demand_id = df_mode['iso_demand_dropdown_var'][0]
-        # demand_id = 'ACTUAL'
-        # demand_factor = df_par['iso_demand_size_factor'][0]
-        # load = LOAD(ts_from=self.df_ui_timeseries['date_start'][0],
-        #             ts_to=self.df_ui_timeseries['date_end'][0],
-        #             )
-        #
         # if demand_id == 'ACTUAL':
         #     demand = load.get_demand_actual(area='CA ISO-TAC')
         #
@@ -174,10 +257,6 @@ class Parametrize:
         #         demand['load'] = (demand_factor / iso_load_max) * demand['load']
         #
         # x=1
-
-
-
-        return None
 
 
 

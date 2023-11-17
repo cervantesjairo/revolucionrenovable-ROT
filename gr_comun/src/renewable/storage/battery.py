@@ -1,5 +1,5 @@
 from gr_comun.src.renewable.storage.object.elements import Battery, BatteryCost, BatteryMode
-# from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
+from gr_comun.src.renewable.storage.object.msg import BatteryMSG as Bmsg
 
 
 class BES:

@@ -1,21 +1,19 @@
 from gr_connector.src.caiso.database.demand.query import CAISO_DEMAND
-
+from gr_comun.src.timeseries.object.simulation import Simulation
 
 class LOAD:
     """
     This object is a
     """
     def __init__(self,
-                 ts_from=None,
-                 ts_to=None
+                 simulation: Simulation = None,
                  ):
-        self.start = ts_from
-        self.end = ts_to
+        self.simulation = simulation
 
     def get_demand_actual(self,  area: str = None,):
 
-        quantity = CAISO_DEMAND(ts_from=self.start,
-                                ts_to=self.end
+        quantity = CAISO_DEMAND(ts_from=self.simulation.ts_from,
+                                ts_to=self.simulation.ts_to
                                 ).get_demand(market='ACTUAL',
                                              area=area)
 

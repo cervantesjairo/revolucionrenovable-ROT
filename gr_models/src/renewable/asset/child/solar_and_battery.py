@@ -19,36 +19,36 @@ from gr_models.src.renewable.asset.utils import *
 # from model.asset.utils import *
 
 class SBset(SSet, BSet):
-    def __init__(self, model, config_mode):
+    def __init__(self, model, asset):
         pass
 
 
 class SBpar(SPar, BPar):
-    def __init__(self, model, config_mode):
-        self._solar_battery_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_battery_parameter(model, asset)
 
 
-    def _solar_battery_parameter(self, model, config_mode):
-        self._solar_parameter(model, config_mode)
-        self._battery_parameter(model, config_mode)
+    def _solar_battery_parameter(self, model, asset):
+        self._solar_parameter(model, asset)
+        self._battery_parameter(model, asset)
 
 
 class SBvar(SVar, BVar):
-    def __init__(self, model, config_mode):
-        self._solar_battery_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_battery_variable(model, asset)
 
-    def _solar_battery_variable(self, model, config_mode):
-        self._solar_variable(model, config_mode)
-        self._battery_variable(model, config_mode)
+    def _solar_battery_variable(self, model, asset):
+        self._solar_variable(model, asset)
+        self._battery_variable(model, asset)
 
 
 class SBobj(SObj, BObj):
-    def __init__(self, model, config_mode):
-        self._solar_battery_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_battery_objective(model, asset)
 
-    def _solar_battery_objective(self, model, config_mode):
-        self._solar_objective(model, config_mode)
-        self._battery_objective(model, config_mode)
+    def _solar_battery_objective(self, model, asset):
+        self._solar_objective(model, asset)
+        self._battery_objective(model, asset)
         self._obj_solar_battery_revenue(model)
 
     # def _obj_solar_battery_revenue(self, model):
@@ -65,12 +65,12 @@ class SBobj(SObj, BObj):
 
 
 class SBcon(SCon, BCon):
-    def __init__(self, model, config_mode):
-        self._solar_battery_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_battery_constraint(model, asset)
 
-    def _solar_battery_constraint(self, model, config_mode):
-        self._solar_constraint(model, config_mode)
-        self._battery_constraint(model, config_mode)
+    def _solar_battery_constraint(self, model, asset):
+        self._solar_constraint(model, asset)
+        self._battery_constraint(model, asset)
 
         # self._solar_battery_charge_exp1(model)          # only grid charge
         # self._solar_battery_charge_exp2(model)          # only solar charge

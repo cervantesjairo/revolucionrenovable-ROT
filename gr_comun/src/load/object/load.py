@@ -1,6 +1,3 @@
-from gr_comun.src.timeseries.simulation import Simulation
-
-
 class Load:
     def __init__(self,
                  demand_id: str = None,

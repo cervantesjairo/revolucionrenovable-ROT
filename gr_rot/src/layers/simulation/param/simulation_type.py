@@ -5,7 +5,7 @@ class Simulation:
 
     def __init__(self):
         # TODO: Simulation for service and define the type of the dispatch economico or diseno optimization.
-        self.asset_mode = 'wind_and_solar_and_battery' #'wind_and_solar' #'battery'
+        self.asset_mode = 'wind_solar_battery' #'wind_and_solar' #'battery'
         self.poi_asset = 150
         self.watts = 'kW'
         self.layout = self.setup_layout()
@@ -52,14 +52,14 @@ class Simulation:
                                                 {'label': 'Wind', 'value': 'wind'},
                                                 {'label': 'Solar', 'value': 'solar'},
                                                 {'label': 'Battery', 'value': 'battery'},
-                                                {'label': 'Wind-Solar', 'value': 'wind_and_solar'},
-                                                {'label': 'Wind-Battery', 'value': 'wind_and_battery'},
-                                                {'label': 'Solar-Battery', 'value': 'solar_and_battery'},
+                                                {'label': 'Wind-Solar', 'value': 'wind_solar'},
+                                                {'label': 'Wind-Battery', 'value': 'wind_battery'},
+                                                {'label': 'Solar-Battery', 'value': 'solar_battery'},
                                                 # {'label': 'Solar and dcBattery', 'value': 'solar_and_dc_battery'},
                                                 # {'label': 'Wind + Solar and Battery', 'value': 'wind_solar_and_battery'},
                                                 # {'label': 'Wind + Solar and dcBattery', 'value': 'wind_solar_and_dc_battery'},
                                                 # {'label': 'Solar + Wind and Battery', 'value': 'solar_wind_and_battery'},
-                                                {'label': 'Wind-Solar-Battery', 'value': 'wind_and_solar_and_battery'},
+                                                {'label': 'Wind-Solar-Battery', 'value': 'wind_solar_battery'},
 
                                             ],
                                             value=self.asset_mode,

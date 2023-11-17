@@ -1,100 +1,39 @@
-# from model.asset.model_asset import AssetModel
-from pyomo.environ import *
-import dash
-from dash import dcc, html
 import pandas as pd
-import time
-import datetime
+from pyomo.environ import *
 import plotly.graph_objs as go
 import plotly.subplots as sp
-from gr_models.src.renewable.asset.model_asset import ModelSets, ModelParams, ModelVars, ModelObjective, ModelConstraints
+
+from gr_models.src.renewable.solve import ModelSolution
+from gr_comun.src.renewable.asset.ren_asset import RenewableAsset
+from gr_comun.src.timeseries.ts_rot import TimeSeriesROT
 
 
-class ModelSolution:
+from gr_models.src.renewable.asset.nomenclature.wind import WindNomenclature as Wn
+from gr_models.src.renewable.asset.nomenclature.solar import SolarNomenclature as Sn
+from gr_models.src.renewable.asset.nomenclature.battery import BatteryNomenclature as Bn
 
-    def __init__(self,
-                 # model=AbstractModel(),
-                 asset=None):
-        # self.model = model
-        # self.model.dual = Suffix(direction=Suffix.IMPORT_EXPORT)
-        # self.asset = asset['info_asset_mode'][0]
-        # self._asset = asset['info_asset_mode'][0] # TODO: remove this line adnf fix code
+
+class ResultOptimization:
+
+    def __init__(self, 
+                 instance: ModelSolution,
+                 asset: RenewableAsset,
+                 timeseries: TimeSeriesROT = None):
+        self.instance = instance
         self.asset = asset
-    def solve(self):
+        self.timeseries = timeseries
+        
+    # def get_result_df(self):
+        # TODO : need to review teh modes options in the models
+        # TODO : need to review the parallel for teh timeseries
 
-        # instanciar los objectos/classe (sets, params, vars, objs, cons) object to build the model, i.e. el modelo abstracto.
+    def get_result_df(self):
+        instance = self.instance
+        asset = self.asset.config
+        ts = self.timeseries
 
-        model = AbstractModel()
-        model.dual = Suffix(direction=Suffix.IMPORT_EXPORT)
-        ModelSets(model=model,
-                  asset=self.asset)
-        ModelParams(model=model,
-                    asset=self.asset)
-        ModelVars(model=model,
-                  asset=self.asset)
-        ModelObjective(model=model,
-                       asset=self.asset)
-        ModelConstraints(model=model,
-                         asset=self.asset)
+        ts['LMP'] = [value(instance.lmp[j]) for j in instance.PERIOD]
 
-
-        opt = SolverFactory('glpk')
-        instance = model.create_instance(
-            filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data.dat')
-
-        # if self._asset == 'wind':
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_w.dat')
-        #
-        # if self._asset == 'solar':
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_s.dat')
-        #
-        # if self._asset == 'battery':
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_b.dat')
-        #
-        # if self._asset == 'wind_and_solar':
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_ws.dat')
-        #
-        # if self._asset == 'wind_and_battery':
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_wb.dat')
-        #
-        # if self._asset == 'solar_and_battery':
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_sb.dat')
-        #
-        # if self._asset == 'wind_and_solar_and_battery':
-        #     # instance = self.model.create_instance(
-        #     #     filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_wsb.dat')
-        #     instance = model.create_instance(
-        #         filename='C:/Users/jhcer/Documents/3. Projects/revolucionrenovable-ROT/gr_models/src/renewable/data/model_data_wsb.dat')
-        #
-        # #     instance = self.model.create_instance(
-        # #         filename='C:/Users/jhcer/Documents/3. Projects/web_test/model/data/model_data_s.dat')
-        now = datetime.datetime.now()
-        print("start time:", now.time())
-        start_time = time.time()
-        results = opt.solve(instance)  # , tee=True)
-        # instance.pprint()
-        # instance.display()
-        if results.solver.status == SolverStatus.ok and results.solver.termination_condition == TerminationCondition.optimal:
-            print("An optimal solution was found.")
-        else:
-            print("No optimal solution was found.")
-
-        end_time = time.time()
-        time_taken = end_time - start_time
-        print("Time taken: ", time_taken, " seconds")
-        # now2 = datetime.datetime.now()
-        # print("Current time is:", now2.time())
-
-        return instance #self.get_output(instance)
-
-    def get_output(self, instance):
-        _asset = self._asset
         output_var = pd.DataFrame()
         MILLON = 1e6
         output_var['OBJECTIVE_VALUE'] = round(value(instance.objective()), 2)
@@ -111,11 +50,11 @@ class ModelSolution:
         df_solar_eco = pd.DataFrame()
         df_battery = pd.DataFrame()
         df_battery_eco = pd.DataFrame()
-        if 'wind' in _asset:
+        if 'wind' in asset:
             ### Economic Analysis
-            COST_INV = round(float([value(instance.WIND_INV_COST)][0])/MILLON, 2)
-            COST_PROD = round(float([value(instance.WIND_PROD_COST)][0])/MILLON, 2)
-            REVENUE = round(float([value(instance.WIND_GRID_REVENUE)][0])/MILLON, 2)
+            COST_INV = round(float([value(instance.WIND_INV_COST)][0]) / MILLON, 2)
+            COST_PROD = round(float([value(instance.WIND_PROD_COST)][0]) / MILLON, 2)
+            REVENUE = round(float([value(instance.WIND_GRID_REVENUE)][0]) / MILLON, 2)
             PROFIT = round(REVENUE - (COST_INV + COST_PROD), 2)
             ### Technical Analysis
             SIZE = float(round([value(instance.WIND_SIZE)][0], 0))
@@ -130,7 +69,7 @@ class ModelSolution:
             #### out information
             df_ts_dispatch['Wind'] = df_ts['WtoA']
 
-            if 'battery' in _asset:
+            if 'battery' in asset:
                 df_ts['WtoB'] = [(-1) * value(instance.WtoB[j]) for j in instance.PERIOD]
                 df_ts['Resource Wind'] = df_ts['WtoA'] - df_ts['WtoB']
                 STORED = round(float(sum(df_ts['WtoB'])))
@@ -178,7 +117,7 @@ class ModelSolution:
             df_wind = pd.DataFrame(table1_wind).fillna('')
             df_wind_eco = pd.DataFrame(table_eco_wind).fillna('')
 
-        if 'solar' in _asset:
+        if 'solar' in asset:
             COST_INV = round(float([value(instance.SOLAR_INV_COST)][0]) / MILLON, 2)
             COST_PROD = round(float([value(instance.SOLAR_PROD_COST)][0]) / MILLON, 2)
             REVENUE = round(float([value(instance.SOLAR_GRID_REVENUE)][0]) / MILLON, 2)
@@ -186,11 +125,11 @@ class ModelSolution:
             ### Technical Analysis
             SIZE_AC = float(round([value(instance.SOLAR_AC_SIZE)][0], 0))
             SIZE_DC = float(round([value(instance.SOLAR_DC_SIZE)][0], 0))
-            RATIO = SIZE_DC/SIZE_AC
+            RATIO = SIZE_DC / SIZE_AC
             SIZE = '{size_ac}@{ratio}ratio'.format(size_ac=round(SIZE_AC),
                                                    ratio=round(RATIO, 2))
             df_ts['StoA'] = [value(instance.StoA[j]) for j in instance.PERIOD]
-            df_ts['Solar'] = df_ts['StoA']      ## output
+            df_ts['Solar'] = df_ts['StoA']  ## output
             df_ts['SOLAR_DC'] = [value(instance.SOLAR_DC_PROD[j]) for j in instance.PERIOD]
             df_ts['SOLAR_DC_INV'] = [value(instance.SOLAR_DC_INV[j]) for j in instance.PERIOD]
             df_ts['SOLAR_AC_INV'] = [value(instance.SOLAR_AC_INV[j]) for j in instance.PERIOD]
@@ -205,7 +144,7 @@ class ModelSolution:
             #### out information
             df_ts_dispatch['Solar'] = df_ts['StoA']
 
-            if 'battery' in _asset:
+            if 'battery' in asset:
                 df_ts['StoB'] = [(-1) * value(instance.StoB[j]) for j in instance.PERIOD]
                 df_ts['Resource Solar'] = df_ts['StoA'] - df_ts['StoB']
                 STORED = round(float(sum(df_ts['StoB'])))
@@ -252,7 +191,7 @@ class ModelSolution:
             df_solar = pd.DataFrame(table1_solar).fillna('')
             df_solar_eco = pd.DataFrame(table_eco_solar).fillna('')
 
-        if 'battery' in _asset:
+        if 'battery' in asset:
             ### Economic Analysis
             COST_INV = round(float([value(instance.BATTERY_INV_COST)][0]) / MILLON, 2)
             COST_PROD = round(float([value(instance.BATTERY_PROD_COST)][0]) / MILLON, 2)
@@ -276,13 +215,13 @@ class ModelSolution:
             # round(float(sum(df_ts['WtoA'])), 1)
             DELIVERED = round(float(sum(df_ts['B_DISCHARGE'])), 0)
             B_STORED = round(float(sum(df_ts['B_CHARGE'])))
-            LOSS = 100 * round(float((B_STORED - DELIVERED)/B_STORED))
+            LOSS = 100 * round(float((B_STORED - DELIVERED) / B_STORED))
             CYCLES = round(float(sum(df_ts['B_DISCHARGE']) / CAPACITY))
 
-            if 'wind' in _asset:
+            if 'wind' in asset:
                 B_STORED = B_STORED + W_STORED
 
-            if 'solar' in _asset:
+            if 'solar' in asset:
                 B_STORED = B_STORED + S_STORED
 
             table1_battery = {
@@ -322,7 +261,8 @@ class ModelSolution:
 
             #### out information
             df_ts_dispatch['Battery'] = df_ts[['BATTERY']]
-            df_ts_battery[['SoC', 'ChargeGrid', 'Discharge', 'Battery']] = df_ts[['B_SOC', 'GtoB', 'B_DISCHARGE', 'BATTERY']]
+            df_ts_battery[['SoC', 'ChargeGrid', 'Discharge', 'Battery']] = df_ts[
+                ['B_SOC', 'GtoB', 'B_DISCHARGE', 'BATTERY']]
 
             ts_bat = self.get_fig_battery(df_fig=df_ts_battery)
 
@@ -338,9 +278,9 @@ class ModelSolution:
         }
 
         df_final = pd.DataFrame(table1)
-        df_final = df_final.merge(df_wind, on='Description', how='left') if 'wind' in _asset else df_final
-        df_final = df_final.merge(df_solar, on='Description', how='left') if 'solar' in _asset else df_final
-        df_final = df_final.merge(df_battery, on='Description', how='left') if 'battery' in _asset else df_final
+        df_final = df_final.merge(df_wind, on='Description', how='left') if 'wind' in asset else df_final
+        df_final = df_final.merge(df_solar, on='Description', how='left') if 'solar' in asset else df_final
+        df_final = df_final.merge(df_battery, on='Description', how='left') if 'battery' in asset else df_final
 
         table_economics = {
             'Description': ['Profit [M$]',
@@ -353,9 +293,9 @@ class ModelSolution:
         }
 
         df_eco = pd.DataFrame(table_economics)
-        df_eco = df_eco.merge(df_wind_eco, on='Description', how='left') if 'wind' in _asset else df_eco
-        df_eco = df_eco.merge(df_solar_eco, on='Description', how='left') if 'solar' in _asset else df_eco
-        df_eco = df_eco.merge(df_battery_eco, on='Description', how='left') if 'battery' in _asset else df_eco
+        df_eco = df_eco.merge(df_wind_eco, on='Description', how='left') if 'wind' in asset else df_eco
+        df_eco = df_eco.merge(df_solar_eco, on='Description', how='left') if 'solar' in asset else df_eco
+        df_eco = df_eco.merge(df_battery_eco, on='Description', how='left') if 'battery' in asset else df_eco
 
         return [df_eco, df_final, ts_dispacth, ts_bat]
 
@@ -373,7 +313,7 @@ class ModelSolution:
                 for col in df_fig.columns:
                     if col != 'SoC':
                         fig.add_trace(go.Scatter(x=df_fig_index['index'], y=df_fig[col], name=col,
-                                                  mode='lines', line_shape='hv'))
+                                                 mode='lines', line_shape='hv'))
 
                 # Define the layout of the plot
                 fig.update_layout(
@@ -408,7 +348,8 @@ class ModelSolution:
                                      mode='lines', visible='legendonly')) if 'SolarBatt' in df_fig.columns else None
 
             fig.add_trace(go.Scatter(x=df_fig_index['index'], y=df_fig['WindBatt'], name='WindBatt',
-                                     mode='lines', visible='legendonly',)) if 'WindBatt' in df_fig.columns else None
+                                     mode='lines',
+                                     visible='legendonly', )) if 'WindBatt' in df_fig.columns else None
 
             # Add traces for the 'LMP' column on the secondary (right) y-axis
             fig.add_trace(go.Scatter(x=df_fig_index['index'], y=df_fig['LMP'], name='LMP', mode='lines',
@@ -428,8 +369,4 @@ class ModelSolution:
 
         return fig
 
-    def get_file(self, output_var, output_time):
-
-        with pd.ExcelWriter('C:/Users/jhcer/Documents/3. Projects/software/output.xlsx') as writer:
-            output_var.to_excel(writer, sheet_name='summary')
-            output_time.to_excel(writer, sheet_name='datetime')
+        # return table_1, table2, fig1, fig2

@@ -1,4 +1,5 @@
 from gr_comun.src.messages.base import Message
+from gr_comun.src.renewable.solar.object.msg import SolarMSG as Smsg
 import pandas as pd
 
 
@@ -24,7 +25,7 @@ class SolarNomenclature(Message):
     pSizeFix = 'solar_size_fix'
     pSizeLB = 'solar_size_lb_min'
     pSizeUB = 'solar_size_ub_max'
-    pSOLAR = 'solar'  # todo change to scf
+    pSOLAR = Smsg.SCF#'solar'  # todo change to scf
     pLMP = 'lmp'  # todo change to solar lmp
 
     # Variables

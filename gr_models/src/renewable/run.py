@@ -24,6 +24,9 @@ class SolveModel:
         start_time = time.time()
         pd.set_option('display.max_rows', None)
         print("getting data...")
+
+
+        #todo
         # data = Parametrize(df_ui_timeseries=self.df_ui_timeseries, df_ui_input=self.df_ui_input)
         # df_mode, df_par, df_timeseries = data.get_data()
 

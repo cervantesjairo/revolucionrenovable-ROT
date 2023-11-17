@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 
-def get_timeseries(ts_from: datetime = None,
-                   ts_to: datetime = None,
+def get_timeseries(ts_from: datetime,
+                   ts_to: datetime,
                    freq: str = 'H',
                    lat=None,
                    lon=None,

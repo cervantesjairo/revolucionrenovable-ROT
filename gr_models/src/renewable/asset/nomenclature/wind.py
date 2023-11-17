@@ -1,4 +1,5 @@
 from gr_comun.src.messages.base import Message
+from gr_comun.src.renewable.wind.object.msg import WindMSG as Wmsg
 import pandas as pd
 
 
@@ -16,7 +17,8 @@ class WindNomenclature(Message):
     pSizeFix = 'wind_size_fix'
     pSizeLB = 'wind_size_lb_min'
     pSizeUB = 'wind_size_ub_max'
-    pWIND = 'wind' # todo change to scf
+    pACLoss = 'wind_ac_loss'
+    pWIND = Wmsg.WCF #'wind_capacity_factor' # todo change to scf
     pLMP = 'lmp' # todo change to wind lmp
 
     # Variables

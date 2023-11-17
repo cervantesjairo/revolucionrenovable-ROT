@@ -7,12 +7,11 @@ from gr_models.src.renewable.asset.utils import *
 
 
 class BSet:
-    def __init__(self, model, config_mode):
-        # self._battery_set(model, config_mode)
+    def __init__(self, model, asset):
+        # self._battery_set(model, asset)
         pass
 
-
-    def _battery_set(self, model, config_mode):
+    def _battery_set(self, model, asset):
         self._PERIOD(model)
 
         return self
@@ -22,10 +21,10 @@ class BSet:
 
 
 class BPar:
-    def __init__(self, model, config_mode):
-        self._battery_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._battery_parameter(model, asset)
 
-    def _battery_parameter(self, model, config_mode):
+    def _battery_parameter(self, model, asset):
 
         self._battery_poi(model)
 
@@ -110,10 +109,10 @@ class BPar:
 
 
 class BVar:
-    def __init__(self, model, config_mode):
-        self._battery_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._battery_variable(model, asset)
 
-    def _battery_variable(self, model, config_mode):
+    def _battery_variable(self, model, asset):
         self._BATTERY_INV_COST(model)
         self._BATTERY_PROD_COST(model)
         self._BATTERY_GRID_COST(model)
@@ -126,8 +125,8 @@ class BVar:
         self._B_DISCHARGE(model)
         self._GtoB(model)
         self._BtoA(model)
-        self._WtoB(model) if config_mode in ['wind_and_battery', 'wind_and_solar_and_battery'] else None
-        self._StoB(model) if config_mode in ['solar_and_battery', 'wind_and_solar_and_battery'] else None
+        self._WtoB(model) if asset.config in ['wind_battery', 'wind_solar_battery'] else None
+        self._StoB(model) if asset.config in ['solar_battery', 'wind_solar_battery'] else None
 
         return self
 
@@ -175,11 +174,11 @@ class BVar:
 
           
 class BObj:
-    def __init__(self, model, config_mode):
-        self._battery_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._battery_objective(model, asset)
 
-    def _battery_objective(self, model, config_mode):
-        self._obj_battery_revenue(model) if config_mode == 'battery' else None
+    def _battery_objective(self, model, asset):
+        self._obj_battery_revenue(model) if asset.config == 'battery' else None
         self._battery_exp_grid_revenue(model)
         self._battery_exp_grid_cost(model)
         self._battery_exp_invest_cost(model)
@@ -218,16 +217,14 @@ class BObj:
 
 
 class BCon:
-    def __init__(self, model, config_mode):
-        self._battery_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._battery_constraint(model, asset)
 
-    def _battery_constraint(self, model, config_mode):
-        self._wind_battery_prod(model) if config_mode in ['wind_and_battery',
-                                                                                'wind_and_solar_and_battery'] else None
-        self._solar_battery_prod(model) if config_mode in ['solar_and_battery',
-                                                                                 'wind_and_solar_and_battery'] else None
+    def _battery_constraint(self, model, asset):
+        self._wind_battery_prod(model) if asset.config in ['wind_battery', 'wind_solar_battery'] else None
+        self._solar_battery_prod(model) if asset.config in ['solar_battery', 'wind_solar_battery'] else None
 
-        self._battery_only_charge(model) if config_mode == 'battery' else None
+        self._battery_only_charge(model) if asset.config == 'battery' else None
         self._battery_discharge_grid(model)
         
         self._battery_discharge_at_poi(model)
@@ -244,7 +241,7 @@ class BCon:
         # self._battery_soc_rte_charge_discharge(model)
         self._battery_soc_limit(model)
 
-        # mode_power = config_mode['battery_power_mode'][0] TODO FIX
+        # mode_power = asset['battery_power_mode'][0] TODO FIX
         mode_power = 'fix'
         if 'fix' in mode_power:
             self._battery_power_equal_to(model)
@@ -256,7 +253,7 @@ class BCon:
             self._battery_power_ub(model)
 
         self._battery_duration(model)
-        # mode_dur = config_mode['battery_duration_mode'][0] TODO FIX
+        # mode_dur = asset['battery_duration_mode'][0] TODO FIX
         mode_dur = 'fix'
         if 'fix' in mode_dur:
             self._battery_duration_equal_to(model)
@@ -264,7 +261,7 @@ class BCon:
             self._battery_duration_lb(model)
             self._battery_duration_ub(model)
 
-        # mode_cycle = config_mode['battery_cycle_mode'][0] TODO FIX
+        # mode_cycle = asset['battery_cycle_mode'][0] TODO FIX
         mode_cycle = 'unrestricted'
         if 'unrestricted' in mode_cycle:
             pass
@@ -272,7 +269,7 @@ class BCon:
             self._battery_cycle_lb(model)
             self._battery_cycle_ub(model)
 
-        # mode_dod = config_mode['battery_dod_mode'][0] TODO FIX
+        # mode_dod = asset['battery_dod_mode'][0] TODO FIX
         mode_dod = 'unrestricted'
         if 'unrestricted' in mode_dod:
             pass

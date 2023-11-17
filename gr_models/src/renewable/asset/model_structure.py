@@ -8,125 +8,125 @@ from gr_models.src.renewable.asset.child.wind_and_solar_and_battery import WSBob
 
 
 class Sets:
-    def __init__(self, model, config_mode):
-        _asset = config_mode
-        if _asset == 'wind':
-            WSet(model, config_mode)
+    def __init__(self, model, asset):
+        # asset.config = asset
+        if asset.config == 'wind':
+            WSet(model, asset)
 
-        if _asset == 'solar':
-            SSet(model, config_mode)
+        if asset.config == 'solar':
+            SSet(model, asset)
 
-        if _asset == 'battery':
-            BSet(model, config_mode)
+        if asset.config == 'battery':
+            BSet(model, asset)
 
-        if _asset == 'wind_and_solar':
-            WSset(model, config_mode)
+        if asset.config == 'wind_solar':
+            WSset(model, asset)
 
-        if _asset == 'wind_and_battery':
-            WBset(model, config_mode)
+        if asset.config == 'wind_battery':
+            WBset(model, asset)
 
-        if _asset == 'solar_and_battery':
-            SBset(model, config_mode)
+        if asset.config == 'solar_battery':
+            SBset(model, asset)
 
-        if _asset == 'wind_and_solar_and_battery':
-            WSBset(model, config_mode)
+        if asset.config == 'wind_solar_battery':
+            WSBset(model, asset)
 
 
 class Pars:
-    def __init__(self, model, config_mode):
-        _asset = config_mode#['info_asset_mode'][0]
-        if _asset == 'wind':
-            WPar(model, config_mode)
+    def __init__(self, model, asset):
+        # asset.config = asset#['infoasset.config_mode'][0]
+        if asset.config == 'wind':
+            WPar(model, asset)
 
-        if _asset == 'solar':
-            SPar(model, config_mode)
+        if asset.config == 'solar':
+            SPar(model, asset)
 
-        if _asset == 'battery':
-            BPar(model, config_mode)
+        if asset.config == 'battery':
+            BPar(model, asset)
 
-        if _asset == 'wind_and_solar':
-            WSpar(model, config_mode)
+        if asset.config == 'wind_solar':
+            WSpar(model, asset)
 
-        if _asset == 'wind_and_battery':
-            WBpar(model, config_mode)
+        if asset.config == 'wind_battery':
+            WBpar(model, asset)
 
-        if _asset == 'solar_and_battery':
-            SBpar(model, config_mode)
+        if asset.config == 'solar_battery':
+            SBpar(model, asset)
 
-        if _asset == 'wind_and_solar_and_battery':
-            WSBpar(model, config_mode)
+        if asset.config == 'wind_solar_battery':
+            WSBpar(model, asset)
 
 
 class Vars:
-    def __init__(self, model, config_mode):
-        _asset = config_mode
-        if _asset == 'wind':
-            WVar(model, config_mode)
+    def __init__(self, model, asset):
+        # asset.config = asset
+        if asset.config == 'wind':
+            WVar(model, asset)
 
-        if _asset == 'solar':
-            SVar(model, config_mode)
+        if asset.config == 'solar':
+            SVar(model, asset)
 
-        if _asset == 'battery':
-            BVar(model, config_mode)
+        if asset.config == 'battery':
+            BVar(model, asset)
 
-        if _asset == 'wind_and_solar':
-            WSvar(model, config_mode)
+        if asset.config == 'wind_solar':
+            WSvar(model, asset)
 
-        if _asset == 'wind_and_battery':
-            WBvar(model, config_mode)
+        if asset.config == 'wind_battery':
+            WBvar(model, asset)
 
-        if _asset == 'solar_and_battery':
-            SBvar(model, config_mode)
+        if asset.config == 'solar_battery':
+            SBvar(model, asset)
 
-        if _asset == 'wind_and_solar_and_battery':
-            WSBvar(model, config_mode)
+        if asset.config == 'wind_solar_battery':
+            WSBvar(model, asset)
 
 
 class Objs:
-    def __init__(self, model, config_mode):
-        _asset = config_mode
-        if _asset == 'wind':
-            WObj(model, config_mode)
+    def __init__(self, model, asset):
+        # asset.config = asset
+        if asset.config == 'wind':
+            WObj(model, asset)
 
-        if _asset == 'solar':
-            SObj(model, config_mode)
+        if asset.config == 'solar':
+            SObj(model, asset)
 
-        if _asset == 'battery':
-            BObj(model, config_mode)
+        if asset.config == 'battery':
+            BObj(model, asset)
 
-        if _asset == 'wind_and_solar':
-            WSobj(model, config_mode)
+        if asset.config == 'wind_solar':
+            WSobj(model, asset)
 
-        if _asset == 'wind_and_battery':
-            WBobj(model, config_mode)
+        if asset.config == 'wind_battery':
+            WBobj(model, asset)
 
-        if _asset == 'solar_and_battery':
-            SBobj(model, config_mode)
+        if asset.config == 'solar_battery':
+            SBobj(model, asset)
 
-        if _asset == 'wind_and_solar_and_battery':
-            WSBobj(model, config_mode)
+        if asset.config == 'wind_solar_battery':
+            WSBobj(model, asset)
 
 
 class Cons:
-    def __init__(self, model, config_mode):
-        _asset = config_mode
-        if _asset == 'wind':
-            WCon(model, config_mode)
+    def __init__(self, model, asset):
+        # asset.config = asset
+        if asset.config == 'wind':
+            WCon(model, asset)
 
-        if _asset == 'solar':
-            SCon(model, config_mode)
+        if asset.config == 'solar':
+            SCon(model, asset)
 
-        if _asset == 'battery':
-            BCon(model, config_mode)
+        if asset.config == 'battery':
+            BCon(model, asset)
 
-        if _asset == 'wind_and_solar':
-            WScon(model, config_mode)
+        if asset.config == 'wind_solar':
+            WScon(model, asset)
 
-        if _asset == 'wind_and_battery':
-            WBcon(model, config_mode)
+        if asset.config == 'wind_battery':
+            WBcon(model, asset)
 
-        if _asset == 'solar_and_battery':
-            SBcon(model, config_mode)
+        if asset.config == 'solar_battery':
+            SBcon(model, asset)
 
-        if _asset == 'wind_and_solar_and_battery':
-            WSBcon(model, config_mode)
+        if asset.config == 'wind_solar_battery':
+            WSBcon(model, asset)

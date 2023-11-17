@@ -18,35 +18,35 @@ from gr_models.src.renewable.asset.utils import *
 # from model.asset.utils import *
 
 class WSset(WSet, SSet):
-    def __init__(self, model, config_mode):
+    def __init__(self, model, asset):
         pass
 
 
 class WSpar(WPar, SPar):
-    def __init__(self, model, config_mode):
-        self._wind_solar_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_parameter(model, asset)
 
-    def _wind_solar_parameter(self, model, config_mode):
-        self._wind_parameter(model, config_mode)
-        self._solar_parameter(model, config_mode)
+    def _wind_solar_parameter(self, model, asset):
+        self._wind_parameter(model, asset)
+        self._solar_parameter(model, asset)
 
 
 class WSvar(WVar, SVar):
-    def __init__(self, model, config_mode):
-        self._wind_solar_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_variable(model, asset)
 
-    def _wind_solar_variable(self, model, config_mode):
-        self._wind_variable(model, config_mode)
-        self._solar_variable(model, config_mode)
+    def _wind_solar_variable(self, model, asset):
+        self._wind_variable(model, asset)
+        self._solar_variable(model, asset)
 
 
 class WSobj(WObj, SObj):
-    def __init__(self, model, config_mode):
-        self._wind_solar_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_objective(model, asset)
 
-    def _wind_solar_objective(self, model, config_mode):
-        self._wind_objective(model, config_mode)
-        self._solar_objective(model, config_mode)
+    def _wind_solar_objective(self, model, asset):
+        self._wind_objective(model, asset)
+        self._solar_objective(model, asset)
         self._obj_wind_solar_revenue(model)
 
     # def _obj_wind_solar_revenue(self, model):
@@ -63,9 +63,9 @@ class WSobj(WObj, SObj):
 
 
 class WScon(WCon, SCon):
-    def __init__(self, model, config_mode):
-        self._wind_solar_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_constraint(model, asset)
 
-    def _wind_solar_constraint(self, model, config_mode):
-        self._wind_constraint(model, config_mode)
-        self._solar_constraint(model, config_mode)
+    def _wind_solar_constraint(self, model, asset):
+        self._wind_constraint(model, asset)
+        self._solar_constraint(model, asset)

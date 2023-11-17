@@ -9,7 +9,7 @@ class DataFormat:
                  ts_price=None,
                  ts_demand=None,
                  asset: RenewableAsset = None,
-                    ):
+                 ):
         self.ts_wind = ts_wind
         self.ts_solar = ts_solar
         self.ts_price = ts_price

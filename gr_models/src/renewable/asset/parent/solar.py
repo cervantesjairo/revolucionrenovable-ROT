@@ -5,11 +5,11 @@ from gr_models.src.renewable.asset.utils import *
 
 
 class SSet:
-    def __init__(self, model, config_mode):
-        # self._solar_set(model, config_mode)
+    def __init__(self, model, asset):
+        # self._solar_set(model, asset)
         pass
 
-    def _solar_set(self, model, config_mode):
+    def _solar_set(self, model, asset):
         self._PERIOD(model)
 
         return self
@@ -19,10 +19,10 @@ class SSet:
 
 
 class SPar:
-    def __init__(self, model, config_mode):
-        self._solar_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_parameter(model, asset)
 
-    def _solar_parameter(self, model, config_mode):
+    def _solar_parameter(self, model, asset):
         self._solar_poi(model)
         self._solar_cost_inverter(model)
         self._solar_cost_bos(model)
@@ -101,10 +101,10 @@ class SPar:
 
 
 class SVar:
-    def __init__(self, model, config_mode):
-        self._solar_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_variable(model, asset)
 
-    def _solar_variable(self, model, config_mode):
+    def _solar_variable(self, model, asset):
         self._SOLAR_INV_COST(model)
         self._SOLAR_PROD_COST(model)
         self._SOLAR_GRID_REVENUE(model)
@@ -154,11 +154,11 @@ class SVar:
 
 
 class SObj:
-    def __init__(self, model, config_mode):
-        self._solar_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_objective(model, asset)
 
-    def _solar_objective(self, model, config_mode):
-        self._obj_solar_revenue(model) if config_mode == 'solar' else None
+    def _solar_objective(self, model, asset):
+        self._obj_solar_revenue(model) if asset.config == 'solar' else None
         self._solar_exp_grid_revenue(model)
         self._solar_exp_invest_cost(model)
         self._solar_exp_prod_cost(model)
@@ -189,10 +189,10 @@ class SObj:
 
 
 class SCon:
-    def __init__(self, model, config_mode):
-        self._solar_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._solar_constraint(model, asset)
 
-    def _solar_constraint(self, model, config_mode):
+    def _solar_constraint(self, model, asset):
         self._solar_at_poi(model)
 
         self._solar_size_less_than_poi(model)
@@ -202,10 +202,10 @@ class SCon:
         self._solar_dc_inv_prod(model)
         self._solar_ac_inv_prod(model)
         self._solar_ac_inv_limit(model)
-        self._solar_only_prod(model) if config_mode == 'solar' else None
-        self._solar_only_prod(model) if config_mode == 'wind_and_solar' else None
+        self._solar_only_prod(model) if asset.config == 'solar' else None
+        self._solar_only_prod(model) if asset.config == 'wind_solar' else None
 
-        mode_inv = 'fix'#config_mode['solar_inverter_mode'][0] TODO: fix this
+        mode_inv = 'fix'#asset['solar_inverter_mode'][0] TODO: fix this
         if 'fix' in mode_inv:
             self._solar_ac_inv_size_equal_to(model)
             del model.solar_size_less_than_poi
@@ -213,7 +213,7 @@ class SCon:
             self._solar_ac_size_lb(model)
             self._solar_ac_size_ub(model)
 
-        mode_ratio = 'fix'#config_mode['solar_ratio_mode'][0] TODO: fix this
+        mode_ratio = 'fix'#asset['solar_ratio_mode'][0] TODO: fix this
         if 'fix' in mode_ratio:
             self._solar_ratio_equal_to(model)
         elif 'range' in mode_ratio:

@@ -6,11 +6,11 @@ from gr_models.src.renewable.asset.utils import *
 
 
 class WSet:
-    def __init__(self, model, config_mode):
-        # self._wind_set(model, config_mode)
+    def __init__(self, model, asset):
+        # self._wind_set(model, asset)
         pass
 
-    def _wind_set(self, model, config_mode):
+    def _wind_set(self, model, asset):
         self._PERIOD(model)
 
         return self
@@ -20,10 +20,10 @@ class WSet:
 
 
 class WPar:
-    def __init__(self, model, config_mode):
-        self._wind_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_parameter(model, asset)
 
-    def _wind_parameter(self, model, config_mode):
+    def _wind_parameter(self, model, asset):
         self._wind_poi(model)
         self._wind_cost(model)
         self._wind_cost_inter(model)
@@ -70,10 +70,10 @@ class WPar:
 
 
 class WVar:
-    def __init__(self, model, config_mode):
-        self._wind_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_variable(model, asset)
 
-    def _wind_variable(self, model, config_mode):
+    def _wind_variable(self, model, asset):
         self._WIND_INV_COST(model)
         self._WIND_PROD_COST(model)
         self._WIND_GRID_REVENUE(model)
@@ -103,11 +103,11 @@ class WVar:
 
 
 class WObj:
-    def __init__(self, model, config_mode):
-        self._wind_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_objective(model, asset)
 
-    def _wind_objective(self, model, config_mode):
-        self._obj_wind_revenue(model) if config_mode == 'wind' else None
+    def _wind_objective(self, model, asset):
+        self._obj_wind_revenue(model) if asset.config == 'wind' else None
         self._wind_exp_grid_revenue(model)
         self._wind_exp_invest_cost(model)
         self._wind_exp_prod_cost(model)
@@ -137,17 +137,17 @@ class WObj:
 
 
 class WCon:
-    def __init__(self, model, config_mode):
-        self._wind_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_constraint(model, asset)
 
-    def _wind_constraint(self, model, config_mode):
-        self._wind_only_prod(model) if config_mode == 'wind' else None
-        self._wind_only_prod(model) if config_mode == 'wind_and_solar' else None
+    def _wind_constraint(self, model, asset):
+        self._wind_only_prod(model) if asset.config == 'wind' else None
+        self._wind_only_prod(model) if asset.config == 'wind_solar' else None
 
         self._wind_at_poi(model)
         self._wind_size_less_than_poi(model)
 
-        mode = 'fix'#config_mode['wind_size_mode'][0] TODO FIX
+        mode = 'fix'#asset['wind_size_mode'][0] TODO FIX
         if 'fix' in mode:
             self._wind_size_equal_to(model)
             del model.wind_size_less_than_poi

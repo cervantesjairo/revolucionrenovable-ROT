@@ -11,38 +11,38 @@ from gr_models.src.renewable.asset.utils import *
 
 
 class WSBset(WSet, SSet, BSet):
-    def __init__(self, model, config_mode):
+    def __init__(self, model, asset):
         pass
 
 
 class WSBpar(WPar, SPar, BPar):
-    def __init__(self, model, config_mode):
-        self._wind_solar_battery_parameter(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_battery_parameter(model, asset)
 
-    def _wind_solar_battery_parameter(self, model, config_mode):
-        self._wind_parameter(model, config_mode)
-        self._solar_parameter(model, config_mode)
-        self._battery_parameter(model, config_mode)
+    def _wind_solar_battery_parameter(self, model, asset):
+        self._wind_parameter(model, asset)
+        self._solar_parameter(model, asset)
+        self._battery_parameter(model, asset)
 
 
 class WSBvar(WVar, SVar, BVar):
-    def __init__(self, model, config_mode):
-        self._wind_solar_battery_variable(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_battery_variable(model, asset)
 
-    def _wind_solar_battery_variable(self, model, config_mode):
-        self._wind_variable(model, config_mode)
-        self._solar_variable(model, config_mode)
-        self._battery_variable(model, config_mode)
+    def _wind_solar_battery_variable(self, model, asset):
+        self._wind_variable(model, asset)
+        self._solar_variable(model, asset)
+        self._battery_variable(model, asset)
 
 
 class WSBobj(WObj, SObj, BObj):
-    def __init__(self, model, config_mode):
-        self._wind_solar_battery_objective(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_battery_objective(model, asset)
 
-    def _wind_solar_battery_objective(self, model, config_mode):
-        self._wind_objective(model, config_mode)
-        self._solar_objective(model, config_mode)
-        self._battery_objective(model, config_mode)
+    def _wind_solar_battery_objective(self, model, asset):
+        self._wind_objective(model, asset)
+        self._solar_objective(model, asset)
+        self._battery_objective(model, asset)
         self._obj_wind_solar_battery_revenue(model)
 
     # def _obj_wind_solar_battery_revenue(self, model):
@@ -59,13 +59,13 @@ class WSBobj(WObj, SObj, BObj):
         model.objective = Objective(rule=obj_wind_solar_battery_revenue_rule, sense=maximize)
 
 class WSBcon(WCon, SCon, BCon):
-    def __init__(self, model, config_mode):
-        self._wind_solar_battery_constraint(model, config_mode)
+    def __init__(self, model, asset):
+        self._wind_solar_battery_constraint(model, asset)
 
-    def _wind_solar_battery_constraint(self, model, config_mode):
-        self._wind_constraint(model, config_mode)
-        self._solar_constraint(model, config_mode)
-        self._battery_constraint(model, config_mode)
+    def _wind_solar_battery_constraint(self, model, asset):
+        self._wind_constraint(model, asset)
+        self._solar_constraint(model, asset)
+        self._battery_constraint(model, asset)
 
         # self._wind_solar_battery_charge_exp1(model)          # only grid charge
         # self._wind_solar_battery_charge_exp2(model)          # only wind charge
