@@ -35,28 +35,32 @@ from gr_comun.src.timeseries.is_rot import InvariantSeries
 from gr_models.src.renewable.data.dat_file import DatFile
 from gr_models.src.renewable.solve import ModelSolution
 from gr_models.src.renewable.result import ResultOptimization
+from gr_models.src.renewable.display import Figures
 
-class Parametrize:
+import pandas as pd
 
-    def __init__(self, df_ui_timeseries=None, df_ui_input=None):
-        self.df_ui_timeseries = df_ui_timeseries
-        self.df_ui_input = df_ui_input
 
-    def get_data(self):
+class ProblemSolution:
 
-        df_par = self.df_ui_input.select_dtypes(exclude='object')
-        df_mode = self.df_ui_input.select_dtypes(include='object')
+    def __init__(self, 
+                 df_input: pd.DataFrame(),
+                 ):
+        self.df_input = df_input
 
-        sim = Simulation(ts_from=self.df_ui_timeseries['date_start'][0],
-                         ts_to=self.df_ui_timeseries['date_end'][0],
-                         lat=self.df_ui_timeseries['lat'][0],
-                         lon=self.df_ui_timeseries['lon'][0],
+    def get_results(self):
+
+        df_par = self.df_input.select_dtypes(exclude='object')
+
+        sim = Simulation(ts_from=self.df_input['date_start'][0],
+                         ts_to=self.df_input['date_end'][0],
+                         lat=self.df_input['lat'][0],
+                         lon=self.df_input['lon'][0],
                          tz=None,
                          freq='H'
                          )
 
-        cashflow = CashFlowMeasures(eco_lifetime=self.df_ui_input['planning_horizon'][0],
-                                interest_rate=self.df_ui_input['interest_rate'][0],
+        cashflow = CashFlowMeasures(eco_lifetime=self.df_input['planning_horizon'][0],
+                                interest_rate=self.df_input['interest_rate'][0],
                                 compounding='Y'
                                 )
 
@@ -153,8 +157,6 @@ class Parametrize:
             ),
         )
 
-
-
         load_caiso = Load(
             demand_id='ACTUAL',
             demand_factor=1,
@@ -186,84 +188,35 @@ class Parametrize:
                                solar=solar_park,
                                storage=bes,)
 
-        # invariant_series = InvariantSeries(asset=asset,
-        #                                    financial=cashflow,)
+        invariant_series = InvariantSeries(asset=asset,
+                                           financial=cashflow,)
         #
-        # y = invariant_series.get_invariant_series()
-        #
+        y = invariant_series.get_invariant_series()
+
         # file = DatFile(time_series=x,
         #                constant_values=y).generate_dat_file()
 
         solution = ModelSolution(asset=asset,).solve()
 
-        results = ResultOptimization(instance=solution,
-                                     asset=asset,
-                                     timeseries=x,
-                                     ).get_result_df()
+        df_cv, df_ts = ResultOptimization(instance=solution,
+                                          asset=asset,
+                                          timeseries=x,
+                                          ).get_result_df()
 
-        return results
+        rot_display = Figures(df_ts=df_ts,
+                              df_cv=df_cv,)
 
+        fig_dispatch = rot_display.get_fig_dispatch()
+        fig_battery_dispatch = rot_display.get_fig_battery()
+        tbl_summary = rot_display.get_table_summary()
+        tbl_economics = rot_display.get_table_econ()
 
-#
-#         # proyect --> object
-            # name
-            # config = solar+wind+battery
-            # financial = cash flow
-            # lat
-            # lon
-            # tz
-
-        # asset --> object
-            # wind --> object
-            # solar --> object
-            # storage --> object
-
-        # iso_load --> object
-            # iso
-            # demand_id
-            # demand_factor
-            # area
-
-        # iso_price  --> object
-            # iso
-            # price_market_id
-            # price_node_id
-
-
-        # timeseries --> object --> method return df with timeseries data (wind, solar, price, demand)
-            # simulation
-            # asset
-            # load
-            # price
-
-
-        ## Model
-        # DatFile --> object --> method return the dat file that parametrizes the model
-        #     timeseries
-        #     asset
-
-        # ModelSolution --> object --> method return an instance. This instance is the model solution
-        #     asset mode
-
-        # Get df output --> object --> method return df with model results (dynamic and stactic
-            # instance
-
-
-        # if demand_id == 'ACTUAL':
-        #     demand = load.get_demand_actual(area='CA ISO-TAC')
-        #
-        #     if demand_factor:
-        #         iso_load_max = demand['load'].max()
-        #         demand['load'] = (demand_factor / iso_load_max) * demand['load']
-        #
-        # x=1
-
-
+        return [tbl_economics, tbl_summary, fig_dispatch, fig_battery_dispatch]
 
         #df_solar
     #     df_timeseries = self.get_timeseries_data(df_par=df_par,
     #                                              df_mode=df_mode,
-    #                                              df_ts=self.df_ui_timeseries)
+    #                                              df_ts=self.df_input)
     #
     #     asset_poi = df_par.filter(items=['info_asset_poi'])
     #     asset_config = df_mode.filter(items=['info_asset_mode'])
@@ -427,15 +380,15 @@ class Parametrize:
     #
     # def annualized_cost(self, df=None):
     #     # crf = CRF(
-    #     #     ph=self.df_ui_input['planning_horizon'][0],
-    #     #     ir=self.df_ui_input['interest_rate'][0]
+    #     #     ph=self.df_input['planning_horizon'][0],
+    #     #     ir=self.df_input['interest_rate'][0]
     #     # )
     #     #
     #     # df = df * crf.cost_recovery_formula()
     #
     #     crf = CashFlowMeasures(
-    #         eco_lifetime=self.df_ui_input['planning_horizon'][0],
-    #         interest_rate=self.df_ui_input['interest_rate'][0],
+    #         eco_lifetime=self.df_input['planning_horizon'][0],
+    #         interest_rate=self.df_input['interest_rate'][0],
     #         compounding='Y'
     #     )
     #

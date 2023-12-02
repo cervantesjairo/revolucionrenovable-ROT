@@ -1,6 +1,6 @@
-from gr_models.src.renewable.asset.parent.wind import WObj, WSet, WVar, WPar, WCon
-from gr_models.src.renewable.asset.parent.solar import SObj, SSet, SVar, SPar, SCon
-from gr_models.src.renewable.asset.parent.battery import BObj, BSet, BVar, BPar, BCon
+from gr_models.src.renewable.asset.base.wind import WObj, WSet, WVar, WPar, WCon
+from gr_models.src.renewable.asset.base.solar import SObj, SSet, SVar, SPar, SCon
+from gr_models.src.renewable.asset.base.battery import BObj, BSet, BVar, BPar, BCon
 from gr_models.src.renewable.asset.child.wind_and_solar import WSobj, WSset, WSvar, WSpar, WScon
 from gr_models.src.renewable.asset.child.wind_and_battery import WBobj, WBset, WBvar, WBpar, WBcon
 from gr_models.src.renewable.asset.child.solar_and_battery import SBobj, SBset, SBvar, SBpar, SBcon

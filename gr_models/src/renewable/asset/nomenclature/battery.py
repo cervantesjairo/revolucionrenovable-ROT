@@ -44,10 +44,4 @@ class BatteryNomenclature(Message):
     vBtoA = 'BtoA'
     vWtoB = 'WtoB'
     vStoB = 'StoB'
-
-    def __init__(self):
-        self.df = pd.DataFrame()
-
-    # def append_wind_speed(self, value):
-    #     self.df[SolarMSG.SP] = value
-    #     return self
+    vDisp = 'B_DISPATCH'

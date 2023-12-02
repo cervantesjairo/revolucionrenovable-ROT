@@ -1,7 +1,7 @@
 from pyomo.environ import *
 
-from gr_models.src.renewable.asset.parent.wind import WObj, WSet, WVar, WPar, WCon
-from gr_models.src.renewable.asset.parent.solar import SObj, SSet, SVar, SPar, SCon
+from gr_models.src.renewable.asset.base.wind import WObj, WSet, WVar, WPar, WCon
+from gr_models.src.renewable.asset.base.solar import SObj, SSet, SVar, SPar, SCon
 from gr_models.src.renewable.asset.nomenclature.battery import BatteryNomenclature as Bn
 from gr_models.src.renewable.asset.nomenclature.wind import WindNomenclature as Wn
 from gr_models.src.renewable.asset.nomenclature.solar import SolarNomenclature as Sn

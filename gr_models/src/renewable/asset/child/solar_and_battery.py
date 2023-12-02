@@ -7,8 +7,8 @@ from pyomo.environ import *
 # from model.asset.nomenclature.wind import WindNomenclature as Wn
 # from model.asset.nomenclature.solar import SolarNomenclature as Sn
 
-from gr_models.src.renewable.asset.parent.solar import SObj, SSet, SVar, SPar, SCon
-from gr_models.src.renewable.asset.parent.battery import BObj, BSet, BVar, BPar, BCon
+from gr_models.src.renewable.asset.base.solar import SObj, SSet, SVar, SPar, SCon
+from gr_models.src.renewable.asset.base.battery import BObj, BSet, BVar, BPar, BCon
 from gr_models.src.renewable.asset.nomenclature.battery import BatteryNomenclature as Bn
 from gr_models.src.renewable.asset.nomenclature.wind import WindNomenclature as Wn
 from gr_models.src.renewable.asset.nomenclature.solar import SolarNomenclature as Sn
