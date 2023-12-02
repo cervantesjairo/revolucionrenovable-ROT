@@ -205,7 +205,7 @@ class SCon:
         self._solar_only_prod(model) if asset.config == 'solar' else None
         self._solar_only_prod(model) if asset.config == 'wind_solar' else None
 
-        mode_inv = 'fix'#asset['solar_inverter_mode'][0] TODO: fix this
+        mode_inv = asset.solar.mode.inv_conf
         if 'fix' in mode_inv:
             self._solar_ac_inv_size_equal_to(model)
             del model.solar_size_less_than_poi
@@ -213,7 +213,7 @@ class SCon:
             self._solar_ac_size_lb(model)
             self._solar_ac_size_ub(model)
 
-        mode_ratio = 'fix'#asset['solar_ratio_mode'][0] TODO: fix this
+        mode_ratio = asset.solar.mode.ratio_conf
         if 'fix' in mode_ratio:
             self._solar_ratio_equal_to(model)
         elif 'range' in mode_ratio:

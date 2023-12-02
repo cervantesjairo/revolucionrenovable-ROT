@@ -27,7 +27,6 @@ class SBpar(SPar, BPar):
     def __init__(self, model, asset):
         self._solar_battery_parameter(model, asset)
 
-
     def _solar_battery_parameter(self, model, asset):
         self._solar_parameter(model, asset)
         self._battery_parameter(model, asset)

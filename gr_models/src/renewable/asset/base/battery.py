@@ -241,8 +241,7 @@ class BCon:
         # self._battery_soc_rte_charge_discharge(model)
         self._battery_soc_limit(model)
 
-        # mode_power = asset['battery_power_mode'][0] TODO FIX
-        mode_power = 'fix'
+        mode_power = asset.storage.mode.power_conf
         if 'fix' in mode_power:
             self._battery_power_equal_to(model)
             del model.battery_size_less_than_poi
@@ -253,24 +252,22 @@ class BCon:
             self._battery_power_ub(model)
 
         self._battery_duration(model)
-        # mode_dur = asset['battery_duration_mode'][0] TODO FIX
-        mode_dur = 'fix'
+
+        mode_dur = asset.storage.mode.dur_conf
         if 'fix' in mode_dur:
             self._battery_duration_equal_to(model)
         elif 'range' in mode_dur:
             self._battery_duration_lb(model)
             self._battery_duration_ub(model)
 
-        # mode_cycle = asset['battery_cycle_mode'][0] TODO FIX
-        mode_cycle = 'unrestricted'
+        mode_cycle = asset.storage.mode.cycle_conf
         if 'unrestricted' in mode_cycle:
             pass
         elif 'range' in mode_cycle:
             self._battery_cycle_lb(model)
             self._battery_cycle_ub(model)
 
-        # mode_dod = asset['battery_dod_mode'][0] TODO FIX
-        mode_dod = 'unrestricted'
+        mode_dod = asset.storage.mode.dod_conf
         if 'unrestricted' in mode_dod:
             pass
         elif 'range' in mode_dod:

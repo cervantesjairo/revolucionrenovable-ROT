@@ -147,11 +147,11 @@ class WCon:
         self._wind_at_poi(model)
         self._wind_size_less_than_poi(model)
 
-        mode = 'fix'#asset['wind_size_mode'][0] TODO FIX
-        if 'fix' in mode:
+        mode_size = asset.wind.mode.size_conf
+        if 'fix' in mode_size:
             self._wind_size_equal_to(model)
             del model.wind_size_less_than_poi
-        elif 'range' in mode:
+        elif 'range' in mode_size:
             self._wind_size_lb(model)
             self._wind_size_ub(model)
 
